@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prayer times</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e1730">
+<meta name="description" content="Horaires de prière, Coran, qibla, tasbih et calendrier.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Hanken+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f7;--panel:#fff;--ink:#14213d;--mute:#5a6685;--gold:#8a6a1c;--line:#cfd6e6;--acc:#2c4a8a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1730;--panel:#16224a;--ink:#e8ecf5;--mute:#9aa6c6;--gold:#e0bd62;--line:#2a3869;--acc:#8fb0f5}}
+:root[data-theme="dark"]{--bg:#0e1730;--panel:#16224a;--ink:#e8ecf5;--mute:#9aa6c6;--gold:#e0bd62;--line:#2a3869;--acc:#8fb0f5}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Hanken Grotesk",system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px 18px 40px}
+.ar{font-family:Amiri,"Noto Naskh Arabic",serif}
+.top{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:6px}.tabs button[aria-pressed=true]{background:var(--gold);color:#101830;border-color:var(--gold);font-weight:600}
+.date{color:var(--mute);font-size:.95rem;margin:14px 0 0}
+h1{font:700 1.1rem Amiri,serif;margin:0 0 2px}
+.hero{text-align:center;padding:14px 0 6px}
+.next{font:700 3.2rem/1.05 Amiri,serif;margin:0}
+.next small{display:block;font-size:1.6rem;color:var(--gold);font-weight:400}
+.cd{font-size:1.5rem;font-variant-numeric:tabular-nums;margin:6px 0 0}
+.cd span{color:var(--mute);font-size:.95rem;display:block}
+svg{width:100%;height:auto;display:block;margin:4px 0 8px}
+.track{fill:none;stroke:var(--line);stroke-width:3;stroke-linecap:round}
+.done{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round}
+.dot{fill:var(--bg);stroke:var(--acc);stroke-width:2}.now{fill:var(--gold)}
+ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+li{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}
+li.on{background:var(--panel);border-radius:10px;border-color:transparent;padding-inline:12px;box-shadow:0 0 0 2px var(--gold) inset}
+li.past{color:var(--mute)}
+.n{flex:1}.n b{font-weight:600}.n .ar{font-size:1.25rem;margin-inline-start:8px;color:var(--mute)}
+.t{font-size:1.35rem;font-variant-numeric:tabular-nums}
+button,select,input{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
+.bell{width:44px;padding:0;font-size:1.1rem;opacity:.45}.bell[aria-pressed=true]{opacity:1;border-color:var(--gold)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+details{margin-top:22px}summary{cursor:pointer;font-weight:600;padding:8px 0}
+.set{display:grid;gap:12px;grid-template-columns:1fr 1fr}.set label{display:grid;gap:4px;font-size:.9rem;color:var(--mute)}
+.full{grid-column:1/-1}
+.note{color:var(--mute);font-size:.85rem;margin-top:18px}
+.t{text-align:end}.iq{display:block;font-size:.8rem;color:var(--mute)}.mq{display:grid;gap:6px}.mq button{text-align:start}.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.ig input{width:100%;min-width:0;box-sizing:border-box;text-align:center;padding:8px 2px}
+.rb{display:flex;align-items:center;gap:10px;margin-top:14px}.vs{background:var(--panel);border-radius:12px;padding:12px 14px;margin:10px 0;border:2px solid transparent}.vs.cur{border-color:var(--gold)}.vs .ar{font-size:1.8rem;line-height:2.2;margin:6px 0}.tr{color:var(--mute);margin:4px 0 0}.vt{display:flex;justify-content:space-between;align-items:center}.vp{width:40px;padding:0}.no{color:var(--gold);font-weight:600}.bsm{text-align:center;font-size:1.9rem;margin:14px 0 6px}#qplay{width:100%;margin-top:10px;background:var(--gold);color:#101830;border-color:var(--gold);font-weight:600}
+.pg{background:var(--panel);border-radius:12px;padding:16px 14px;font:400 var(--qs,1.75rem)/2.6 Amiri,"Noto Naskh Arabic",serif;text-align:justify;margin:0}.ay{cursor:pointer;border-radius:6px}.ay.cur{background:color-mix(in srgb,var(--gold) 28%,transparent)}.end{color:var(--gold);font-size:.85em}.sh{text-align:center;border:2px solid var(--gold);border-radius:10px;margin:12px 0;font-size:1.5rem;line-height:2;color:var(--gold)}.pnav{display:flex;justify-content:space-between;align-items:center;margin:12px 0}.pnav button{min-width:52px;font-size:1.3rem}.pnav input{width:5em;text-align:center}
+.tabs{flex-wrap:wrap}.tabs button{padding:8px 9px}#tbtn{display:block;width:210px;height:210px;border-radius:50%;margin:16px auto;font-size:3.4rem;background:var(--gold);color:#101830;border-color:var(--gold);font-weight:600}
+.cb{display:flex;justify-content:space-between;align-items:center;margin:12px 0}.cb button{min-width:52px;font-size:1.3rem}#cAll[aria-pressed=true]{background:var(--gold);color:#101830;border-color:var(--gold)}#cT{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.9rem}#cT th,#cT td{padding:7px 3px;text-align:center;border-bottom:1px solid var(--line)}#cT th{position:sticky;top:0;background:var(--bg);color:var(--mute);font-weight:600}#cT td:first-child{text-align:start;white-space:nowrap}#cT tr.td{background:var(--panel);box-shadow:inset 0 0 0 2px var(--gold)}#cT tr.fr{background:color-mix(in srgb,var(--acc) 10%,transparent)}#cT small{display:block;color:var(--mute);font-size:.72rem}#cT tr.mh td{font:700 1.15rem Amiri,serif;color:var(--gold);text-align:start;padding-top:18px}
+#vS h2{font:700 1.5rem Amiri,serif;margin:16px 0 0}.gh{font:700 1.1rem Amiri,serif;color:var(--gold);margin:24px 0 8px}.set label.chk{display:flex;gap:10px;align-items:center;font-size:1rem;color:var(--ink)}.chk input{width:20px;height:20px;min-height:0}#vS details>summary{display:none}
+#toast{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));max-width:520px;margin:auto;background:var(--gold);color:#101830;padding:14px 16px;border-radius:12px;font-weight:600;display:none}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+#txt{background:var(--panel);border-radius:12px;padding:18px;font:400 1.9rem/2.3 Amiri,serif;text-align:center;margin:0 0 14px}
+#txt .h{display:flex;justify-content:space-between;font:600 .95rem "Hanken Grotesk",sans-serif;color:var(--mute)}
+.sur{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px}
+.sur a{display:flex;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;color:var(--ink);text-decoration:none;background:var(--panel)}
+.sur a span{color:var(--gold);min-width:1.6em}
+.sur a:hover{border-color:var(--gold)}
+#search{width:100%;box-sizing:border-box}
+.ok{width:40px;padding:0;font-size:1.1rem;opacity:.4}.ok[aria-pressed=true]{opacity:1;border-color:var(--gold);color:var(--gold)}.ex{color:var(--mute);font-size:.9rem;text-align:center;margin:10px 0 0}.ex b{color:var(--gold)}.tv{display:block;text-align:start;font:400 1rem/1.6 "Hanken Grotesk",system-ui,sans-serif;color:var(--mute);margin:2px 0 12px}#qtr,#qres{width:100%;margin-top:8px}
+#ntfAsk{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--panel);color:var(--ink);border:1px solid var(--gold);border-radius:16px;padding:14px;box-shadow:0 8px 30px #0008;max-width:560px;margin:auto}#ntfAsk p{margin:0 0 10px}#ntfAsk div{display:flex;gap:8px}#ntfAsk button{flex:1}
+html.tv{font-size:135%}html.tv main{max-width:min(1100px,96vw)}
+.tv :focus{outline:4px solid var(--gold);outline-offset:3px;border-radius:12px}
+.tv #list{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.tv #list li{margin:0}
+.tv .bell,.tv .ok{width:52px;height:52px}
+</style></head><body><main>
+<div class="top">
+<div class="tabs"><button type="button" id="tabP" aria-pressed="true" data-i="tp"></button><button type="button" id="tabQ" aria-pressed="false" data-i="tq"></button><button type="button" id="tabK" aria-pressed="false" data-i="qb"></button><button type="button" id="tabT" aria-pressed="false" data-i="tb"></button><button type="button" id="tabD" aria-pressed="false" data-i="dua"></button><button type="button" id="tabC" aria-pressed="false" data-i="cl"></button><button type="button" id="tabS" aria-pressed="false" aria-label="Settings">⚙️</button></div>
+<select id="selLang" aria-label="Language"></select>
+</div>
+
+<section id="vP">
+<p class="date" id="date"></p>
+<h1 id="city"></h1>
+<div class="note" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 0"><span id="mqStatus"></span><button type="button" id="mqRetry" data-i="ert" hidden style="min-height:32px;padding:4px 10px"></button></div>
+<div class="hero"><p class="next" id="next"></p><p class="cd" id="cd"></p></div>
+<svg viewBox="0 0 300 165" role="img" id="arc"></svg>
+<ul id="list"></ul>
+<p class="ex" id="ex"></p><p class="ex" id="ev"></p>
+</section>
+
+<section id="vQ" hidden>
+<p class="note" data-i="qi" style="margin-top:16px"></p>
+<div id="qlist"><button type="button" id="qres" hidden></button><input id="search" type="search" aria-label="Search" style="margin-top:8px"><div class="sur" id="sur"></div></div>
+<div id="qread" hidden>
+<div class="rb"><button type="button" id="qback" data-i="bk"></button><b id="qtitle"></b></div>
+<label style="display:grid;gap:4px;font-size:.9rem;color:var(--mute);margin-top:10px"><span data-i="rc"></span><input id="recQ" type="search" autocomplete="off"><select id="selRec"></select></label>
+<button type="button" id="qplay" hidden></button><button type="button" id="qtr" aria-pressed="false" hidden></button>
+<div class="pnav" dir="ltr"><button type="button" data-d="-1" aria-label="‹">‹</button><span>📖 <input type="number" id="pg" min="1" max="604" value="1" aria-label="Page"> / 604</span><button type="button" data-d="1" aria-label="›">›</button></div>
+<div id="qverses"></div>
+<div class="pnav" dir="ltr"><button type="button" data-d="-1" aria-label="‹">‹</button><button type="button" data-d="1" aria-label="›">›</button></div>
+</div>
+</section>
+<section id="vK" hidden>
+<p class="note" id="qdeg" style="text-align:center;font-size:1.1rem;margin-top:18px"></p>
+<svg viewBox="0 0 220 230" id="dial" role="img" aria-label="Qibla" style="max-width:320px;margin:auto">
+<polygon points="110,2 104,14 116,14" style="fill:var(--ink)"/>
+<g id="rot"><circle cx="110" cy="120" r="96" style="fill:none;stroke:var(--line);stroke-width:3"/><text x="110" y="40" text-anchor="middle" style="fill:var(--mute);font:600 14px sans-serif">N</text>
+<g id="arw"><polygon points="110,34 122,120 98,120" style="fill:var(--gold)"/><text x="110" y="64" text-anchor="middle" font-size="22">🕋</text></g></g>
+<circle cx="110" cy="120" r="5" style="fill:var(--ink)"/>
+</svg>
+<button type="button" id="cmp" data-i="cmp" style="display:block;margin:12px auto"></button>
+<p class="note" id="cno" style="text-align:center"></p>
+</section>
+<section id="vT" hidden>
+<p class="ar" id="dh" lang="ar" dir="rtl" style="text-align:center;font-size:2.2rem;margin:18px 0 6px"></p>
+<div class="set"><label><span class="ar">ذِكْر</span><select id="selD"></select></label><label><span data-i="tgt"></span><select id="selT"></select></label></div>
+<button type="button" id="tbtn" aria-label="+1">0</button>
+<p class="note" id="tinfo" style="text-align:center"></p>
+<button type="button" id="trst" data-i="rst" style="display:block;margin:auto"></button>
+</section>
+<section id="vD" hidden><div id="dl"></div></section>
+<section id="vC" hidden>
+<div class="set" style="margin-top:14px"><label><span data-i="city"></span><select id="cCity"></select></label><label><span>📅</span><select id="cY"></select></label></div>
+<div class="cb"><button type="button" id="cPm" aria-label="‹">‹</button><b id="cMn"></b><button type="button" id="cNm" aria-label="›">›</button></div>
+<div class="quick"><button type="button" id="cAll" aria-pressed="false" data-i="cy"></button><button type="button" id="cCsv" data-i="cx"></button></div>
+<p class="note" id="cInfo"></p>
+<div style="overflow-x:auto"><table id="cT"></table></div>
+</section>
+<section id="vS" hidden>
+<h2 data-i="st"></h2>
+<h3 class="gh" data-i="g1"></h3>
+<div class="set">
+<label><span data-i="th"></span><select id="selTheme"><option value="auto">Auto</option><option value="light" data-i="thl"></option><option value="dark" data-i="thd"></option></select></label>
+<label><span data-i="hf"></span><select id="selHf"><option value="0">24 h</option><option value="1">12 h (AM/PM)</option></select></label>
+<label class="full"><span data-i="qs"></span><select id="selQs"><option value="1.4rem">A−</option><option value="1.75rem">A</option><option value="2.1rem">A+</option><option value="2.5rem">A++</option></select></label>
+</div>
+<h3 class="gh" data-i="ntf"></h3>
+<div class="set">
+<label class="chk full"><input type="checkbox" id="chkNtf"> <span data-i="ntf"></span></label>
+<label class="chk"><input type="checkbox" id="chkSnd"> <span data-i="snd"></span></label>
+<label class="chk"><input type="checkbox" id="chkVib"> <span data-i="vib"></span></label>
+<label class="chk full"><input type="checkbox" id="chkIqn"> <span data-i="iqn"></span></label>
+<button class="full" id="btnTest" type="button" data-i="tst"></button>
+</div>
+<h3 class="gh" data-i="ad"></h3>
+<div class="set">
+<label class="chk full"><input type="checkbox" id="chkAdn"> <span data-i="adp"></span></label>
+<label><span data-i="av"></span><select id="selAv"></select></label>
+<label><span data-i="af"></span><select id="selAf"></select></label>
+<label class="full"><span data-i="avl"></span><input type="range" id="rngVol" min="0.1" max="1" step="0.05"></label>
+<button type="button" id="adPv"></button><button type="button" id="adPf">▶ Fajr</button>
+<button type="button" id="adStop" class="full" data-i="stp" hidden></button>
+<p class="note full" data-i="adc" style="margin:0"></p>
+<label class="full"><span data-i="adf"></span><input type="file" id="adFile" accept="audio/*"></label>
+<p class="note full" id="adInfo" style="margin:0"></p>
+<button type="button" id="adDel" class="full" data-i="adx" hidden></button>
+<label class="full"><span data-i="adu"></span><input type="url" id="adUrl" inputmode="url" placeholder="https://…/adhan.mp3"></label>
+<p class="note full" style="margin:0;font-size:.78rem">Audio credits — Doha, Qatar: public domain (Internet Archive). Makkah: “Adhan, Great Mosque of Mecca” by Seyfula Islam, CC BY 3.0 (Wikimedia Commons). Madinah: “Call to prayer from the prophet mosque” by ejaz215 (Freesound, via Wikimedia Commons). Beautiful adhan: CC0 (Adam-synagda). Aaqib Azeez: CC BY-SA 4.0 (Atcovi).</p>
+</div>
+<h3 class="gh" data-i="g3"></h3>
+<div class="set">
+<label><span data-i="city"></span><select id="selCity"></select></label>
+<label><span data-i="meth"></span><select id="selMethod"><option value="auto" data-i="au"></option><option value="uoif">UOIF (12° / 12°)</option><option value="mwl">Muslim World League (18° / 17°)</option><option value="isna">ISNA (15° / 15°)</option><option value="egypt">Egyptian Authority (19.5° / 17.5°)</option><option value="karachi">Karachi (18° / 18°)</option><option value="uqura">Umm al-Qura (18.5° / +90 min)</option><option value="turkey">Diyanet Türkiye (18° / 17°)</option><option value="muis">MUIS Singapore (20° / 18°)</option><option value="dubai">Dubai (18.2° / 18.2°)</option><option value="qatar">Qatar (18° / +90 min)</option><option value="kuwait">Kuwait (18° / 17.5°)</option><option value="morocco">Maroc – Habous (19° / 17°, +5 min)</option><option value="algeria">Algérie (18° / 17°)</option><option value="tunisia">Tunisie (18° / 18°)</option><option value="tehran">Téhéran (17.7° / 14°, Maghrib 4.5°)</option><option value="jafari">Jafari (16° / 14°, Maghrib 4°)</option><option value="jakim">JAKIM Malaysia (20° / 18°)</option><option value="russia">Russia (16° / 15°)</option></select></label>
+<label><span data-i="asr"></span><select id="selAsr"><option value="1" data-i="std"></option><option value="2" data-i="han"></option></select></label>
+<label><span data-i="rem"></span><select id="selLead"></select></label>
+<label><span data-i="hc"></span><select id="selHc"><option>-2</option><option>-1</option><option selected>0</option><option>1</option><option>2</option></select></label>
+<button class="full" id="geo" type="button" data-i="geo"></button>
+</div>
+<p class="note" data-i="adj" style="margin:14px 0 6px"></p>
+<div class="ig" id="adjs"></div>
+<h3 class="gh" data-i="mq"></h3>
+<details open><summary data-i="mq"></summary><div class="set">
+<label class="full" style="display:flex;gap:8px;align-items:center;font-size:.95rem"><input type="checkbox" id="chkAuto"> <span data-i="ma"></span></label>
+<button class="full" id="mqf" type="button" data-i="mqf"></button>
+<label class="full"><span data-i="ep"></span><div style="display:flex;gap:6px"><input type="search" id="plq" style="flex:1;min-width:0"><button type="button" id="plGo" data-i="ego"></button></div></label>
+<div class="full mq" id="mqlist"></div>
+<p class="note full" data-i="iqh" style="margin:0"></p>
+<p class="note full" data-i="pv" style="margin:0;font-size:.8rem"></p>
+<div class="full ig" id="iqs"></div>
+<button class="full" id="mqx" type="button" data-i="mqx" hidden></button>
+</div></details>
+
+<p class="note" data-i="note"></p>
+<button type="button" id="btnRs" data-i="rs" style="margin-top:18px"></button>
+</section>
+<div id="ntfAsk" hidden role="dialog" aria-live="polite"><p id="ntfTxt"></p><div><button type="button" id="ntfNo"></button><button type="button" id="ntfYes"></button></div></div>
+<noscript>JavaScript requis / JavaScript required.</noscript></main><div id="toast" role="status"></div>
+<script>
+const T={
+fr:{n:"Français",l:"fr-FR",tp:"Horaires",tq:"Coran",set:"Réglages",city:"Ville",meth:"Méthode de calcul",asr:"Asr",std:"Standard",han:"Hanafite",rem:"Rappel",r0:"À l’heure exacte",rb:"{n} min avant",geo:"Utiliser ma position",gno:"Position indisponible. Choisissez une ville.",note:"Les rappels fonctionnent tant que cette page reste ouverte. Les horaires sont calculés dans votre navigateur : en cas de doute, fiez-vous à votre mosquée.",pos:"Ma position",bef:"avant {n} à {t}",a0:"C’est l’heure de {n}",aN:"{n} dans {m} min",sr:"Chourouk",qi:"Lisez le Coran page après page, et écoutez-le avec le récitant de votre choix.",rl:"Lire et écouter",sj:"Sourate",se:"Rechercher une sourate",ti:"Horaires de prière",mq:"Ma mosquée",mqf:"Trouver les mosquées proches",mqe:"Aucune mosquée trouvée ou connexion impossible.",iq:"Iqama",iqh:"Iqama de la mosquée : minutes après l’adhan (+10) ou heure fixe (13:30)",mqx:"Revenir au calcul par ville",bk:"Retour",pl:"Écouter",ps:"Pause",rc:"Récitant",tl:"Traduction",qe:"Chargement impossible. Vérifiez votre connexion.",ld:"Chargement…",ma:"Choisir automatiquement la mosquée la plus proche",qb:"Qibla",tb:"Tasbih",cmp:"Activer la boussole",qd:"Direction de la Qibla : {n}° depuis le nord",tgt:"Objectif",rst:"Remise à zéro",hc:"Correction de la date hégirienne",cno:"Boussole indisponible sur cet appareil : suivez l’angle indiqué depuis le nord.",au:"Automatique (selon le pays)",cl:"Calendrier",cy:"Année entière",cx:"Exporter en CSV",st:"Paramètres",g1:"Affichage",th:"Thème",thl:"Clair",thd:"Sombre",hf:"Format de l’heure",g3:"Calcul des horaires",adj:"Ajustement manuel (minutes, de −30 à +30)",ntf:"Notifications",snd:"Son",vib:"Vibration",iqn:"Rappel de l’iqama",tst:"Tester",qs:"Taille du texte du Coran",rs:"Réinitialiser les paramètres",rsc:"Tout réinitialiser ?",aq:"Iqama de {n}",ad:"Adhan",adp:"Jouer l’adhan à l’heure de la prière",av:"Voix de l’adhan",af:"Voix du Fajr",avl:"Volume",adc:"Personnalisez votre adhan : importez un fichier audio (La Mecque, Médine, votre mosquée…) depuis votre téléphone, ou collez un lien. Choisissez ensuite « Mon adhan » comme voix.",adf:"Mon fichier audio",adu:"Ou un lien vers un fichier audio",adm:"Mon adhan",adb:"Bip simple",stp:"Arrêter",adx:"Supprimer mon fichier",aer:"Lecture impossible : vérifiez votre connexion ou le format du fichier.",ms:"Recherche de la mosquée la plus proche…",mn:"Mosquée la plus proche : {n} ({d} km)",eg1:"Localisation refusée. Autorisez-la dans les réglages de votre navigateur, ou cherchez votre ville ci-dessous.",eg2:"Position introuvable. Activez la localisation de l’appareil, ou cherchez votre ville ci-dessous.",eg3:"La localisation exige une connexion sécurisée (HTTPS) : ouvrez l’application depuis son adresse en https://.",eov:"Le service des mosquées ne répond pas pour le moment. Réessayez dans un instant.",enm:"Aucune mosquée trouvée à proximité.",ep:"Ville ou adresse",ego:"Chercher",ert:"Réessayer",enf:"Lieu introuvable.",l3:"Dernier tiers de la nuit",du:"Duha",im:"Imsak",ift:"Iftar",ein:"{e} dans {n} j",e0:"Aujourd’hui : {e}",e1:"Ramadan",e2:"Aïd al-Fitr",e3:"Aïd al-Adha",e4:"Nouvel an hégirien",rq:"Reprendre la lecture : page {n}",pv:"Pour chercher une mosquée ou une ville, votre position ou votre recherche est envoyée à OpenStreetMap et Open-Meteo. Cette appli ne stocke rien en ligne.",dua:"Douaa",mqn:"Cette sourate n’est pas disponible pour ce récitant.",fav:"Favoris",na:"Activer les notifications pour recevoir l’adhan, même quand l’appli est en arrière-plan ?",naw:"Sur le site, l’adhan ne sonne que si la page reste ouverte.",nay:"Activer",nan:"Plus tard",nao:"Notifications activées ✓",nae:"Autorisation refusée : active-les dans les réglages du téléphone.",recs:"Rechercher un récitant…",mqe:"Liste mp3quran indisponible (connexion ?)."},
+en:{n:"English",l:"en-GB",tp:"Prayer times",tq:"Quran",set:"Settings",city:"City",meth:"Calculation method",asr:"Asr",std:"Standard",han:"Hanafi",rem:"Reminder",r0:"At the exact time",rb:"{n} min before",geo:"Use my location",gno:"Location unavailable. Choose a city.",note:"Reminders work while this page stays open. Times are calculated in your browser; if in doubt, follow your mosque.",pos:"My location",bef:"until {n} at {t}",a0:"It’s time for {n}",aN:"{n} in {m} min",sr:"Sunrise",qi:"Read the Quran page after page and listen with the reciter of your choice.",rl:"Read & listen",sj:"Surah",se:"Search a surah",ti:"Prayer times",mq:"My mosque",mqf:"Find nearby mosques",mqe:"No mosque found or no connection.",iq:"Iqama",iqh:"Mosque iqama: minutes after adhan (+10) or fixed time (13:30)",mqx:"Back to city-based times",bk:"Back",pl:"Listen",ps:"Pause",rc:"Reciter",tl:"Translation",qe:"Could not load. Check your connection.",ld:"Loading…",ma:"Automatically pick the nearest mosque",qb:"Qibla",tb:"Tasbih",cmp:"Enable compass",qd:"Qibla direction: {n}° from north",tgt:"Target",rst:"Reset",hc:"Hijri date adjustment",cno:"Compass unavailable on this device: follow the angle shown from north.",au:"Automatic (by country)",cl:"Calendar",cy:"Full year",cx:"Export as CSV",st:"Settings",g1:"Display",th:"Theme",thl:"Light",thd:"Dark",hf:"Time format",g3:"Prayer time calculation",adj:"Manual adjustment (minutes, −30 to +30)",ntf:"Notifications",snd:"Sound",vib:"Vibration",iqn:"Iqama reminder",tst:"Test",qs:"Quran text size",rs:"Reset settings",rsc:"Reset everything?",aq:"Iqama for {n}",ad:"Adhan",adp:"Play the adhan at prayer time",av:"Adhan voice",af:"Fajr voice",avl:"Volume",adc:"Customize your adhan: import an audio file (Makkah, Madinah, your mosque…) from your phone, or paste a link. Then pick “My adhan” as the voice.",adf:"My audio file",adu:"Or a link to an audio file",adm:"My adhan",adb:"Simple beep",stp:"Stop",adx:"Remove my file",aer:"Playback failed: check your connection or the file format.",ms:"Searching for the nearest mosque…",mn:"Nearest mosque: {n} ({d} km)",eg1:"Location denied. Allow it in your browser settings, or search for your city below.",eg2:"Position not found. Turn on device location, or search for your city below.",eg3:"Location needs a secure connection (HTTPS): open the app from its https:// address.",eov:"The mosque service is not responding right now. Try again in a moment.",enm:"No mosque found nearby.",ep:"City or address",ego:"Search",ert:"Retry",enf:"Place not found.",l3:"Last third of the night",du:"Duha",im:"Imsak",ift:"Iftar",ein:"{e} in {n} d",e0:"Today: {e}",e1:"Ramadan",e2:"Eid al-Fitr",e3:"Eid al-Adha",e4:"Islamic New Year",rq:"Resume reading: page {n}",pv:"To find a mosque or a city, your location or search is sent to OpenStreetMap and Open-Meteo. This app stores nothing online.",dua:"Duaa",mqn:"This surah isn’t available for this reciter.",fav:"Favorites",na:"Turn on notifications to get the adhan, even when the app is in the background?",naw:"On the web, the adhan only plays while the page stays open.",nay:"Turn on",nan:"Later",nao:"Notifications on ✓",nae:"Permission denied: enable it in your phone settings.",recs:"Search a reciter…",mqe:"mp3quran list unavailable (connection?)."},
+ar:{n:"العربية",l:"ar",tp:"أوقات الصلاة",tq:"القرآن",set:"الإعدادات",city:"المدينة",meth:"طريقة الحساب",asr:"العصر",std:"المعتمد",han:"الحنفي",rem:"التذكير",r0:"في الوقت تمامًا",rb:"قبل {n} دقيقة",geo:"استخدم موقعي",gno:"الموقع غير متاح. اختر مدينة.",note:"تعمل التذكيرات ما دامت الصفحة مفتوحة. الأوقات محسوبة في متصفحك؛ وعند الشك فاتبع تقويم مسجدك.",pos:"موقعي",bef:"حتى {n} عند {t}",a0:"حان وقت {n}",aN:"{n} بعد {m} دقيقة",sr:"الشروق",qi:"اقرأ القرآن صفحة بعد صفحة، واستمع إليه بصوت القارئ الذي تختاره.",rl:"اقرأ واستمع",sj:"سورة",se:"ابحث عن سورة",ti:"أوقات الصلاة",mq:"مسجدي",mqf:"ابحث عن المساجد القريبة",mqe:"لم يُعثر على مسجد أو لا يوجد اتصال.",iq:"الإقامة",iqh:"إقامة المسجد: دقائق بعد الأذان (+10) أو وقت ثابت (13:30)",mqx:"العودة إلى الحساب حسب المدينة",bk:"رجوع",pl:"استماع",ps:"إيقاف مؤقت",rc:"القارئ",tl:"الترجمة",qe:"تعذّر التحميل. تحقق من اتصالك.",ld:"جارٍ التحميل…",ma:"اختيار أقرب مسجد تلقائيًا",qb:"القبلة",tb:"التسبيح",cmp:"تفعيل البوصلة",qd:"اتجاه القبلة: {n}° من الشمال",tgt:"الهدف",rst:"إعادة ضبط",hc:"تعديل التاريخ الهجري",cno:"البوصلة غير متاحة على هذا الجهاز: اتبع الزاوية المعروضة من الشمال.",au:"تلقائي (حسب البلد)",cl:"التقويم",cy:"السنة كاملة",cx:"تصدير CSV",st:"الإعدادات",g1:"العرض",th:"المظهر",thl:"فاتح",thd:"داكن",hf:"تنسيق الوقت",g3:"حساب أوقات الصلاة",adj:"تعديل يدوي (بالدقائق، من −30 إلى +30)",ntf:"الإشعارات",snd:"الصوت",vib:"الاهتزاز",iqn:"تذكير الإقامة",tst:"تجربة",qs:"حجم نص القرآن",rs:"إعادة ضبط الإعدادات",rsc:"إعادة ضبط كل شيء؟",aq:"إقامة {n}",ad:"الأذان",adp:"تشغيل الأذان عند وقت الصلاة",av:"صوت الأذان",af:"صوت أذان الفجر",avl:"مستوى الصوت",adc:"خصّص أذانك: استورد ملفًا صوتيًا (مكة، المدينة، مسجدك…) من هاتفك أو الصق رابطًا، ثم اختر «أذاني» كصوت.",adf:"ملفي الصوتي",adu:"أو رابط لملف صوتي",adm:"أذاني",adb:"صفير بسيط",stp:"إيقاف",adx:"حذف ملفي",aer:"تعذّر التشغيل: تحقق من الاتصال أو صيغة الملف.",ms:"جارٍ البحث عن أقرب مسجد…",mn:"أقرب مسجد: {n} ({d} كم)",eg1:"تم رفض الوصول إلى الموقع. اسمح به من إعدادات المتصفح، أو ابحث عن مدينتك أدناه.",eg2:"تعذّر تحديد الموقع. فعّل خدمة الموقع في الجهاز، أو ابحث عن مدينتك أدناه.",eg3:"يتطلب تحديد الموقع اتصالًا آمنًا (HTTPS): افتح التطبيق من عنوانه https://.",eov:"خدمة المساجد لا تستجيب حاليًا. حاول بعد قليل.",enm:"لم يُعثر على مسجد قريب.",ep:"مدينة أو عنوان",ego:"بحث",ert:"إعادة المحاولة",enf:"لم يُعثر على المكان."},
+tr:{n:"Türkçe",l:"tr",tp:"Namaz vakitleri",tq:"Kur’an",set:"Ayarlar",city:"Şehir",meth:"Hesaplama yöntemi",asr:"İkindi",std:"Standart",han:"Hanefi",rem:"Hatırlatma",r0:"Tam vaktinde",rb:"{n} dk önce",geo:"Konumumu kullan",gno:"Konum alınamadı. Bir şehir seçin.",note:"Hatırlatmalar bu sayfa açık kaldığı sürece çalışır. Vakitler tarayıcınızda hesaplanır; şüphede caminizin takvimine uyun.",pos:"Konumum",bef:"{n} vaktine ({t}) kadar",a0:"{n} vakti geldi",aN:"{n} vaktine {m} dk kaldı",sr:"Güneş",qi:"Kur’an’ı sayfa sayfa okuyun ve istediğiniz hafızla dinleyin.",rl:"Oku ve dinle",sj:"Sure",se:"Sure ara",ti:"Namaz vakitleri",mq:"Camim",mqf:"Yakındaki camileri bul",mqe:"Cami bulunamadı veya bağlantı yok.",iq:"Kamet",iqh:"Caminin kameti: ezandan sonra dakika (+10) veya sabit saat (13:30)",mqx:"Şehre göre hesaba dön",bk:"Geri",pl:"Dinle",ps:"Duraklat",rc:"Hafız",tl:"Meal",qe:"Yüklenemedi. Bağlantınızı kontrol edin.",ld:"Yükleniyor…",ma:"En yakın camiyi otomatik seç",qb:"Kıble",tb:"Tesbih",cmp:"Pusulayı etkinleştir",qd:"Kıble yönü: kuzeyden {n}°",tgt:"Hedef",rst:"Sıfırla",hc:"Hicri tarih düzeltmesi",cno:"Bu cihazda pusula yok: kuzeyden gösterilen açıyı izleyin.",au:"Otomatik (ülkeye göre)",cl:"Takvim",cy:"Tüm yıl",cx:"CSV olarak aktar",st:"Ayarlar",g1:"Görünüm",th:"Tema",thl:"Açık",thd:"Koyu",hf:"Saat biçimi",g3:"Namaz vakitlerinin hesabı",adj:"Elle ayar (dakika, −30 ile +30 arası)",ntf:"Bildirimler",snd:"Ses",vib:"Titreşim",iqn:"Kamet hatırlatması",tst:"Dene",qs:"Kur’an yazı boyutu",rs:"Ayarları sıfırla",rsc:"Her şey sıfırlansın mı?",aq:"{n} kameti",ad:"Ezan",adp:"Namaz vaktinde ezan okunsun",av:"Ezan sesi",af:"Sabah ezanı sesi",avl:"Ses düzeyi",adc:"Ezanınızı kişiselleştirin: telefonunuzdan bir ses dosyası (Mekke, Medine, camiiniz…) içe aktarın ya da bağlantı yapıştırın. Sonra ses olarak “Ezanım”ı seçin.",adf:"Ses dosyam",adu:"Veya bir ses dosyası bağlantısı",adm:"Ezanım",adb:"Basit bip",stp:"Durdur",adx:"Dosyamı sil",aer:"Oynatılamadı: bağlantınızı veya dosya biçimini kontrol edin.",ms:"En yakın cami aranıyor…",mn:"En yakın cami: {n} ({d} km)",eg1:"Konum izni reddedildi. Tarayıcı ayarlarından izin verin ya da aşağıdan şehrinizi arayın.",eg2:"Konum bulunamadı. Cihaz konumunu açın ya da aşağıdan şehrinizi arayın.",eg3:"Konum için güvenli bağlantı (HTTPS) gerekir: uygulamayı https:// adresinden açın.",eov:"Cami hizmeti şu anda yanıt vermiyor. Biraz sonra tekrar deneyin.",enm:"Yakında cami bulunamadı.",ep:"Şehir veya adres",ego:"Ara",ert:"Tekrar dene",enf:"Yer bulunamadı."},
+es:{n:"Español",l:"es",tp:"Horarios",tq:"Corán",set:"Ajustes",city:"Ciudad",meth:"Método de cálculo",asr:"Asr",std:"Estándar",han:"Hanafí",rem:"Recordatorio",r0:"A la hora exacta",rb:"{n} min antes",geo:"Usar mi ubicación",gno:"Ubicación no disponible. Elige una ciudad.",note:"Los recordatorios funcionan mientras esta página siga abierta. Los horarios se calculan en tu navegador; si tienes dudas, consulta a tu mezquita.",pos:"Mi ubicación",bef:"hasta {n} a las {t}",a0:"Es la hora de {n}",aN:"{n} en {m} min",sr:"Amanecer",qi:"Lee el Corán página tras página y escúchalo con el recitador que prefieras.",rl:"Leer y escuchar",sj:"Sura",se:"Buscar una sura",ti:"Horarios de oración",mq:"Mi mezquita",mqf:"Buscar mezquitas cercanas",mqe:"No se encontró ninguna mezquita o no hay conexión.",iq:"Iqama",iqh:"Iqama de la mezquita: minutos tras el adhan (+10) u hora fija (13:30)",mqx:"Volver al cálculo por ciudad",bk:"Atrás",pl:"Escuchar",ps:"Pausa",rc:"Recitador",tl:"Traducción",qe:"No se pudo cargar. Revisa tu conexión.",ld:"Cargando…",ma:"Elegir automáticamente la mezquita más cercana",qb:"Qibla",tb:"Tasbih",cmp:"Activar la brújula",qd:"Dirección de la Qibla: {n}° desde el norte",tgt:"Objetivo",rst:"Reiniciar",hc:"Ajuste de la fecha hijri",cno:"Brújula no disponible en este dispositivo: siga el ángulo indicado desde el norte.",au:"Automático (según el país)",cl:"Calendario",cy:"Año completo",cx:"Exportar a CSV",st:"Ajustes",g1:"Pantalla",th:"Tema",thl:"Claro",thd:"Oscuro",hf:"Formato de hora",g3:"Cálculo de los horarios",adj:"Ajuste manual (minutos, de −30 a +30)",ntf:"Notificaciones",snd:"Sonido",vib:"Vibración",iqn:"Recordatorio de la iqama",tst:"Probar",qs:"Tamaño del texto del Corán",rs:"Restablecer ajustes",rsc:"¿Restablecer todo?",aq:"Iqama de {n}",ad:"Adhan",adp:"Reproducir el adhan a la hora de la oración",av:"Voz del adhan",af:"Voz del Fajr",avl:"Volumen",adc:"Personaliza tu adhan: importa un archivo de audio (La Meca, Medina, tu mezquita…) desde tu teléfono o pega un enlace. Luego elige «Mi adhan» como voz.",adf:"Mi archivo de audio",adu:"O un enlace a un archivo de audio",adm:"Mi adhan",adb:"Pitido simple",stp:"Detener",adx:"Eliminar mi archivo",aer:"No se pudo reproducir: revisa tu conexión o el formato del archivo.",ms:"Buscando la mezquita más cercana…",mn:"Mezquita más cercana: {n} ({d} km)",eg1:"Ubicación denegada. Permítela en los ajustes del navegador o busca tu ciudad abajo.",eg2:"No se encontró la posición. Activa la ubicación del dispositivo o busca tu ciudad abajo.",eg3:"La ubicación requiere una conexión segura (HTTPS): abre la aplicación desde su dirección https://.",eov:"El servicio de mezquitas no responde ahora. Inténtalo de nuevo en un momento.",enm:"No se encontró ninguna mezquita cercana.",ep:"Ciudad o dirección",ego:"Buscar",ert:"Reintentar",enf:"Lugar no encontrado."},
+de:{n:"Deutsch",l:"de",tp:"Gebetszeiten",tq:"Koran",set:"Einstellungen",city:"Stadt",meth:"Berechnungsmethode",asr:"Asr",std:"Standard",han:"Hanafitisch",rem:"Erinnerung",r0:"Zur genauen Zeit",rb:"{n} Min. vorher",geo:"Meinen Standort nutzen",gno:"Standort nicht verfügbar. Wähle eine Stadt.",note:"Erinnerungen funktionieren, solange diese Seite geöffnet bleibt. Die Zeiten werden in deinem Browser berechnet; im Zweifel richte dich nach deiner Moschee.",pos:"Mein Standort",bef:"noch bis {n} um {t}",a0:"Es ist Zeit für {n}",aN:"{n} in {m} Min.",sr:"Sonnenaufgang",qi:"Lies den Koran Seite für Seite und höre ihn mit dem Rezitator deiner Wahl.",rl:"Lesen & hören",sj:"Sure",se:"Sure suchen",ti:"Gebetszeiten",mq:"Meine Moschee",mqf:"Moscheen in der Nähe finden",mqe:"Keine Moschee gefunden oder keine Verbindung.",iq:"Iqama",iqh:"Iqama der Moschee: Minuten nach dem Adhan (+10) oder feste Zeit (13:30)",mqx:"Zurück zur Berechnung nach Stadt",bk:"Zurück",pl:"Hören",ps:"Pause",rc:"Rezitator",tl:"Übersetzung",qe:"Laden fehlgeschlagen. Prüfe deine Verbindung.",ld:"Lädt…",ma:"Nächstgelegene Moschee automatisch wählen",qb:"Qibla",tb:"Tasbih",cmp:"Kompass aktivieren",qd:"Qibla-Richtung: {n}° von Norden",tgt:"Ziel",rst:"Zurücksetzen",hc:"Hidschri-Datum anpassen",cno:"Kompass auf diesem Gerät nicht verfügbar: folge dem angezeigten Winkel von Norden aus.",au:"Automatisch (nach Land)",cl:"Kalender",cy:"Ganzes Jahr",cx:"Als CSV exportieren",st:"Einstellungen",g1:"Anzeige",th:"Design",thl:"Hell",thd:"Dunkel",hf:"Zeitformat",g3:"Berechnung der Gebetszeiten",adj:"Manuelle Anpassung (Minuten, −30 bis +30)",ntf:"Benachrichtigungen",snd:"Ton",vib:"Vibration",iqn:"Iqama-Erinnerung",tst:"Testen",qs:"Schriftgröße des Korans",rs:"Einstellungen zurücksetzen",rsc:"Alles zurücksetzen?",aq:"Iqama von {n}",ad:"Adhan",adp:"Adhan zur Gebetszeit abspielen",av:"Adhan-Stimme",af:"Fajr-Stimme",avl:"Lautstärke",adc:"Gestalte deinen Adhan: Importiere eine Audiodatei (Mekka, Medina, deine Moschee …) von deinem Telefon oder füge einen Link ein. Wähle dann „Mein Adhan“ als Stimme.",adf:"Meine Audiodatei",adu:"Oder ein Link zu einer Audiodatei",adm:"Mein Adhan",adb:"Einfacher Piepton",stp:"Stopp",adx:"Meine Datei löschen",aer:"Wiedergabe nicht möglich: Prüfe deine Verbindung oder das Dateiformat.",ms:"Nächstgelegene Moschee wird gesucht …",mn:"Nächste Moschee: {n} ({d} km)",eg1:"Standort abgelehnt. Erlaube ihn in den Browser-Einstellungen oder suche unten deine Stadt.",eg2:"Position nicht gefunden. Aktiviere die Ortung des Geräts oder suche unten deine Stadt.",eg3:"Die Ortung benötigt eine sichere Verbindung (HTTPS): Öffne die App über ihre https://-Adresse.",eov:"Der Moschee-Dienst antwortet gerade nicht. Versuche es gleich noch einmal.",enm:"Keine Moschee in der Nähe gefunden.",ep:"Stadt oder Adresse",ego:"Suchen",ert:"Erneut versuchen",enf:"Ort nicht gefunden."},
+id:{n:"Indonesia",l:"id",tp:"Waktu salat",tq:"Al-Qur’an",set:"Pengaturan",city:"Kota",meth:"Metode perhitungan",asr:"Asar",std:"Standar",han:"Hanafi",rem:"Pengingat",r0:"Tepat waktu",rb:"{n} menit sebelum",geo:"Gunakan lokasi saya",gno:"Lokasi tidak tersedia. Pilih kota.",note:"Pengingat berfungsi selama halaman ini tetap terbuka. Waktu dihitung di browser Anda; jika ragu, ikuti jadwal masjid Anda.",pos:"Lokasi saya",bef:"hingga {n} pukul {t}",a0:"Waktunya {n}",aN:"{n} dalam {m} menit",sr:"Syuruq",qi:"Baca Al-Qur’an halaman demi halaman dan dengarkan dengan qari pilihan Anda.",rl:"Baca & dengar",sj:"Surah",se:"Cari surah",ti:"Waktu salat",mq:"Masjid saya",mqf:"Cari masjid terdekat",mqe:"Masjid tidak ditemukan atau tidak ada koneksi.",iq:"Iqamah",iqh:"Iqamah masjid: menit setelah azan (+10) atau jam tetap (13:30)",mqx:"Kembali ke perhitungan per kota",bk:"Kembali",pl:"Dengarkan",ps:"Jeda",rc:"Qari",tl:"Terjemahan",qe:"Gagal memuat. Periksa koneksi Anda.",ld:"Memuat…",ma:"Pilih masjid terdekat secara otomatis",qb:"Kiblat",tb:"Tasbih",cmp:"Aktifkan kompas",qd:"Arah kiblat: {n}° dari utara",tgt:"Target",rst:"Atur ulang",hc:"Koreksi tanggal Hijriah",cno:"Kompas tidak tersedia di perangkat ini: ikuti sudut dari utara yang ditampilkan.",au:"Otomatis (sesuai negara)",cl:"Kalender",cy:"Setahun penuh",cx:"Ekspor CSV",st:"Pengaturan",g1:"Tampilan",th:"Tema",thl:"Terang",thd:"Gelap",hf:"Format jam",g3:"Perhitungan waktu salat",adj:"Penyesuaian manual (menit, −30 sampai +30)",ntf:"Notifikasi",snd:"Suara",vib:"Getar",iqn:"Pengingat iqamah",tst:"Uji",qs:"Ukuran teks Al-Qur’an",rs:"Atur ulang pengaturan",rsc:"Atur ulang semuanya?",aq:"Iqamah {n}",ad:"Azan",adp:"Putar azan pada waktu salat",av:"Suara azan",af:"Suara azan Subuh",avl:"Volume",adc:"Sesuaikan azan Anda: impor file audio (Makkah, Madinah, masjid Anda…) dari ponsel, atau tempel tautan. Lalu pilih “Azan saya” sebagai suara.",adf:"File audio saya",adu:"Atau tautan ke file audio",adm:"Azan saya",adb:"Bip sederhana",stp:"Berhenti",adx:"Hapus file saya",aer:"Gagal memutar: periksa koneksi atau format file.",ms:"Mencari masjid terdekat…",mn:"Masjid terdekat: {n} ({d} km)",eg1:"Lokasi ditolak. Izinkan di pengaturan browser, atau cari kota Anda di bawah.",eg2:"Posisi tidak ditemukan. Aktifkan lokasi perangkat, atau cari kota Anda di bawah.",eg3:"Lokasi memerlukan koneksi aman (HTTPS): buka aplikasi dari alamat https://-nya.",eov:"Layanan masjid sedang tidak merespons. Coba lagi sebentar lagi.",enm:"Tidak ada masjid di sekitar.",ep:"Kota atau alamat",ego:"Cari",ert:"Coba lagi",enf:"Tempat tidak ditemukan."},
+ur:{n:"اردو",l:"ur",tp:"نماز کے اوقات",tq:"قرآن",set:"ترتیبات",city:"شہر",meth:"حساب کا طریقہ",asr:"عصر",std:"معیاری",han:"حنفی",rem:"یاد دہانی",r0:"عین وقت پر",rb:"{n} منٹ پہلے",geo:"میرا مقام استعمال کریں",gno:"مقام دستیاب نہیں۔ کوئی شہر منتخب کریں۔",note:"یاد دہانیاں اسی وقت کام کرتی ہیں جب تک یہ صفحہ کھلا رہے۔ اوقات آپ کے براؤزر میں حساب ہوتے ہیں؛ شک ہو تو اپنی مسجد کے اوقات دیکھیں۔",pos:"میرا مقام",bef:"{n} تک، {t} بجے",a0:"{n} کا وقت ہو گیا",aN:"{n} میں {m} منٹ باقی",sr:"طلوعِ آفتاب",qi:"قرآن صفحہ بہ صفحہ پڑھیں اور اپنے پسندیدہ قاری کی آواز میں سنیں۔",rl:"پڑھیں اور سنیں",sj:"سورت",se:"سورت تلاش کریں",ti:"نماز کے اوقات",mq:"میری مسجد",mqf:"قریبی مساجد تلاش کریں",mqe:"کوئی مسجد نہیں ملی یا رابطہ نہیں ہے۔",iq:"اقامت",iqh:"مسجد کی اقامت: اذان کے بعد منٹ (+10) یا مقررہ وقت (13:30)",mqx:"شہر کے حساب پر واپس جائیں",bk:"واپس",pl:"سنیں",ps:"وقفہ",rc:"قاری",tl:"ترجمہ",qe:"لوڈ نہیں ہو سکا۔ اپنا رابطہ چیک کریں۔",ld:"لوڈ ہو رہا ہے…",ma:"قریب ترین مسجد خود بخود منتخب کریں",qb:"قبلہ",tb:"تسبیح",cmp:"قطب نما فعال کریں",qd:"قبلے کی سمت: شمال سے {n}°",tgt:"ہدف",rst:"ری سیٹ",hc:"ہجری تاریخ کی درستی",cno:"اس ڈیوائس پر قطب نما دستیاب نہیں: شمال سے دکھائی گئی زاویہ کی پیروی کریں۔",au:"خودکار (ملک کے مطابق)",cl:"کیلنڈر",cy:"پورا سال",cx:"CSV برآمد کریں",st:"ترتیبات",g1:"ڈسپلے",th:"تھیم",thl:"روشن",thd:"تاریک",hf:"وقت کا فارمیٹ",g3:"نماز کے اوقات کا حساب",adj:"دستی ایڈجسٹمنٹ (منٹ، −30 سے +30)",ntf:"اطلاعات",snd:"آواز",vib:"ارتعاش",iqn:"اقامت کی یاد دہانی",tst:"آزمائیں",qs:"قرآن کے متن کا سائز",rs:"ترتیبات ری سیٹ کریں",rsc:"سب کچھ ری سیٹ کریں؟",aq:"{n} کی اقامت",ad:"اذان",adp:"نماز کے وقت اذان چلائیں",av:"اذان کی آواز",af:"فجر کی آواز",avl:"آواز کی سطح",adc:"اپنی اذان اپنی مرضی سے بنائیں: اپنے فون سے آڈیو فائل (مکہ، مدینہ، آپ کی مسجد…) درآمد کریں یا لنک پیسٹ کریں۔ پھر آواز کے طور پر «میری اذان» منتخب کریں۔",adf:"میری آڈیو فائل",adu:"یا آڈیو فائل کا لنک",adm:"میری اذان",adb:"سادہ بیپ",stp:"روکیں",adx:"میری فائل حذف کریں",aer:"چلانا ممکن نہیں: اپنا کنکشن یا فائل کا فارمیٹ چیک کریں۔",ms:"قریب ترین مسجد تلاش کی جا رہی ہے…",mn:"قریب ترین مسجد: {n} ({d} کلومیٹر)",eg1:"مقام کی اجازت مسترد ہوئی۔ براؤزر کی ترتیبات میں اجازت دیں، یا نیچے اپنا شہر تلاش کریں۔",eg2:"مقام نہیں ملا۔ ڈیوائس کی لوکیشن آن کریں، یا نیچے اپنا شہر تلاش کریں۔",eg3:"لوکیشن کے لیے محفوظ کنکشن (HTTPS) درکار ہے: ایپ کو https:// ایڈریس سے کھولیں۔",eov:"مسجد سروس اس وقت جواب نہیں دے رہی۔ کچھ دیر بعد دوبارہ کوشش کریں۔",enm:"قریب کوئی مسجد نہیں ملی۔",ep:"شہر یا پتہ",ego:"تلاش",ert:"دوبارہ کوشش کریں",enf:"جگہ نہیں ملی۔"}
+};
+const P=[["fajr","Fajr","الفجر"],["sunrise","","الشروق"],["dhuhr","Dhuhr","الظهر"],["asr","Asr","العصر"],["maghrib","Maghrib","المغرب"],["isha","Isha","العشاء"]];
+const G={
+FR:["Europe/Paris",["Paris",48.86,2.35],["Lyon",45.76,4.84],["Marseille",43.30,5.37],["Toulouse",43.60,1.44],["Nice",43.71,7.26],["Nantes",47.22,-1.55],["Strasbourg",48.57,7.75],["Bordeaux",44.84,-0.58],["Lille",50.63,3.06],["Montpellier",43.61,3.88],["Rennes",48.12,-1.68]],
+BE:["Europe/Brussels",["Brussels",50.85,4.35]],GB:["Europe/London",["London",51.51,-0.13]],DE:["Europe/Berlin",["Berlin",52.52,13.40]],ES:["Europe/Madrid",["Madrid",40.42,-3.70],["Barcelona",41.39,2.17]],IT:["Europe/Rome",["Rome",41.90,12.50]],NL:["Europe/Amsterdam",["Amsterdam",52.37,4.90]],CH:["Europe/Zurich",["Geneva",46.20,6.14]],RU:["Europe/Moscow",["Moscow",55.76,37.62]],
+BA:["Europe/Sarajevo",["Sarajevo",43.86,18.41]],AL:["Europe/Tirane",["Tirana",41.33,19.82]],XK:["Europe/Belgrade",["Pristina",42.66,21.17]],
+TR:["Europe/Istanbul",["Istanbul",41.01,28.98],["Ankara",39.93,32.86],["Izmir",38.42,27.14]],
+MA:["Africa/Casablanca",["Casablanca",33.57,-7.59],["Rabat",34.02,-6.84],["Marrakech",31.63,-8.01],["Fes",34.03,-5.00]],
+DZ:["Africa/Algiers",["Algiers",36.75,3.06],["Oran",35.70,-0.63],["Constantine",36.37,6.61]],
+TN:["Africa/Tunis",["Tunis",36.81,10.18],["Sfax",34.74,10.76]],LY:["Africa/Tripoli",["Tripoli",32.89,13.19]],
+EG:["Africa/Cairo",["Cairo",30.04,31.24],["Alexandria",31.20,29.92]],MR:["Africa/Nouakchott",["Nouakchott",18.09,-15.98]],SD:["Africa/Khartoum",["Khartoum",15.50,32.56]],SO:["Africa/Mogadishu",["Mogadishu",2.05,45.32]],DJ:["Africa/Djibouti",["Djibouti",11.59,43.15]],ER:["Africa/Asmara",["Asmara",15.32,38.93]],KM:["Indian/Comoro",["Moroni",-11.70,43.26]],
+SN:["Africa/Dakar",["Dakar",14.72,-17.47]],ML:["Africa/Bamako",["Bamako",12.64,-8.00]],CI:["Africa/Abidjan",["Abidjan",5.36,-4.01]],NG:["Africa/Lagos",["Lagos",6.52,3.38],["Kano",12.00,8.52],["Abuja",9.08,7.40]],NE:["Africa/Niamey",["Niamey",13.51,2.11]],BF:["Africa/Ouagadougou",["Ouagadougou",12.37,-1.52]],TD:["Africa/Ndjamena",["N'Djamena",12.13,15.06]],GN:["Africa/Conakry",["Conakry",9.64,-13.58]],GM:["Africa/Banjul",["Banjul",13.45,-16.58]],SL:["Africa/Freetown",["Freetown",8.48,-13.23]],GW:["Africa/Bissau",["Bissau",11.86,-15.60]],
+KE:["Africa/Nairobi",["Nairobi",-1.29,36.82]],TZ:["Africa/Dar_es_Salaam",["Dar es Salaam",-6.79,39.21]],ZA:["Africa/Johannesburg",["Johannesburg",-26.20,28.05]],
+SA:["Asia/Riyadh",["Mecca",21.39,39.86],["Medina",24.52,39.57],["Riyadh",24.71,46.68],["Jeddah",21.49,39.19]],
+PS:["Asia/Jerusalem",["Jerusalem",31.77,35.21],["Gaza",31.50,34.47,"Asia/Gaza"],["Ramallah",31.90,35.20,"Asia/Hebron"]],
+JO:["Asia/Amman",["Amman",31.95,35.93]],LB:["Asia/Beirut",["Beirut",33.89,35.50]],SY:["Asia/Damascus",["Damascus",33.51,36.28]],IQ:["Asia/Baghdad",["Baghdad",33.32,44.37],["Basra",30.51,47.78]],
+AE:["Asia/Dubai",["Dubai",25.20,55.27],["Abu Dhabi",24.45,54.38]],QA:["Asia/Qatar",["Doha",25.29,51.53]],KW:["Asia/Kuwait",["Kuwait",29.38,47.98]],BH:["Asia/Bahrain",["Manama",26.23,50.59]],OM:["Asia/Muscat",["Muscat",23.59,58.41]],YE:["Asia/Aden",["Sanaa",15.37,44.19],["Aden",12.79,45.04]],
+IR:["Asia/Tehran",["Tehran",35.69,51.39],["Mashhad",36.30,59.60],["Isfahan",32.65,51.67]],
+AZ:["Asia/Baku",["Baku",40.41,49.87]],UZ:["Asia/Tashkent",["Tashkent",41.30,69.24],["Samarkand",39.65,66.96]],KZ:["Asia/Almaty",["Almaty",43.24,76.89],["Astana",51.17,71.43]],KG:["Asia/Bishkek",["Bishkek",42.87,74.59]],TJ:["Asia/Dushanbe",["Dushanbe",38.56,68.77]],TM:["Asia/Ashgabat",["Ashgabat",37.96,58.33]],AF:["Asia/Kabul",["Kabul",34.53,69.17],["Kandahar",31.63,65.74]],
+PK:["Asia/Karachi",["Karachi",24.86,67.01],["Lahore",31.55,74.34],["Islamabad",33.68,73.05]],IN:["Asia/Kolkata",["Delhi",28.61,77.21],["Mumbai",19.08,72.88],["Hyderabad",17.39,78.49]],BD:["Asia/Dhaka",["Dhaka",23.81,90.41],["Chittagong",22.36,91.78]],MV:["Indian/Maldives",["Male",4.18,73.51]],
+ID:["Asia/Jakarta",["Jakarta",-6.21,106.85],["Surabaya",-7.25,112.75],["Medan",3.60,98.67],["Makassar",-5.15,119.43,"Asia/Makassar"]],MY:["Asia/Kuala_Lumpur",["Kuala Lumpur",3.14,101.69]],BN:["Asia/Brunei",["Bandar Seri Begawan",4.89,114.94]],SG:["Asia/Singapore",["Singapore",1.35,103.82]],
+CA:["America/Toronto",["Montreal",45.50,-73.57]],US:["America/New_York",["New York",40.71,-74.01],["Los Angeles",34.05,-118.24,"America/Los_Angeles"]],BR:["America/Sao_Paulo",["São Paulo",-23.55,-46.63]]
+};
+const C={},CG={};for(const c in G){const z=G[c][0];G[c].slice(1).forEach(x=>{C[x[0]]=[x[1],x[2],x[3]||z];CG[x[0]]=c})}
+const M={uoif:[12,12],mwl:[18,17],isna:[15,15],egypt:[19.5,17.5],karachi:[18,18],uqura:[18.5,"m90"],turkey:[18,17],muis:[20,18],dubai:[18.2,18.2]};
+Object.assign(M,{qatar:[18,"m90"],kuwait:[18,17.5],morocco:[19,17],algeria:[18,17],tunisia:[18,18],tehran:[17.7,14,4.5],jafari:[16,14,4],jakim:[20,18],russia:[16,15]});
+const OFF={morocco:{dhuhr:5,maghrib:5}};
+const CM={SA:"uqura",QA:"qatar",KW:"kuwait",AE:"dubai",TR:"turkey",EG:"egypt",PK:"karachi",BD:"karachi",AF:"karachi",IN:"karachi",IR:"tehran",MA:"morocco",DZ:"algeria",TN:"tunisia",ID:"muis",MY:"jakim",SG:"muis",BN:"muis",US:"isna",CA:"isna",FR:"uoif"};
+function curCountry(){if(!s.mosque&&!s.pos)return CG[s.city]||"FR";const l=loc();let b="FR",bd=1e9;for(const c in C){const d=hav(C[c][0],C[c][1],l.lat,l.lng);if(d<bd){bd=d;b=CG[c]}}return b}
+function effMethod(){return s.method==="auto"||!M[s.method]?(CM[curCountry()]||"mwl"):s.method}
+const SUR="Al-Fatiha,Al-Baqara,Al-Imran,An-Nisa,Al-Ma'ida,Al-An'am,Al-A'raf,Al-Anfal,At-Tawba,Yunus,Hud,Yusuf,Ar-Ra'd,Ibrahim,Al-Hijr,An-Nahl,Al-Isra,Al-Kahf,Maryam,Ta-Ha,Al-Anbiya,Al-Hajj,Al-Mu'minun,An-Nur,Al-Furqan,Ash-Shu'ara,An-Naml,Al-Qasas,Al-Ankabut,Ar-Rum,Luqman,As-Sajda,Al-Ahzab,Saba,Fatir,Ya-Sin,As-Saffat,Sad,Az-Zumar,Ghafir,Fussilat,Ash-Shura,Az-Zukhruf,Ad-Dukhan,Al-Jathiya,Al-Ahqaf,Muhammad,Al-Fath,Al-Hujurat,Qaf,Adh-Dhariyat,At-Tur,An-Najm,Al-Qamar,Ar-Rahman,Al-Waqi'a,Al-Hadid,Al-Mujadila,Al-Hashr,Al-Mumtahana,As-Saff,Al-Jumu'a,Al-Munafiqun,At-Taghabun,At-Talaq,At-Tahrim,Al-Mulk,Al-Qalam,Al-Haqqa,Al-Ma'arij,Nuh,Al-Jinn,Al-Muzzammil,Al-Muddaththir,Al-Qiyama,Al-Insan,Al-Mursalat,An-Naba,An-Nazi'at,Abasa,At-Takwir,Al-Infitar,Al-Mutaffifin,Al-Inshiqaq,Al-Buruj,At-Tariq,Al-A'la,Al-Ghashiya,Al-Fajr,Al-Balad,Ash-Shams,Al-Layl,Ad-Duha,Ash-Sharh,At-Tin,Al-Alaq,Al-Qadr,Al-Bayyina,Az-Zalzala,Al-Adiyat,Al-Qari'a,At-Takathur,Al-Asr,Al-Humaza,Al-Fil,Quraysh,Al-Ma'un,Al-Kawthar,Al-Kafirun,An-Nasr,Al-Masad,Al-Ikhlas,Al-Falaq,An-Nas".split(",");
+const Q={1:"بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ ۝ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ۝ مَـٰلِكِ يَوْمِ ٱلدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ۝ صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",112:"قُلْ هُوَ ٱللَّهُ أَحَدٌ ۝ ٱللَّهُ ٱلصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",113:"قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِن شَرِّ ٱلنَّفَّـٰثَـٰتِ فِى ٱلْعُقَدِ ۝ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",114:"قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ ۝ مَلِكِ ٱلنَّاسِ ۝ إِلَـٰهِ ٱلنَّاسِ ۝ مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ ۝ ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ ۝ مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ"};
+const nav=(navigator.language||"fr").slice(0,2);
+let s={lang:T[nav]?nav:"fr",city:"Paris",pos:null,method:"auto",asr:1,lead:0,bells:{fajr:1,dhuhr:1,asr:1,maghrib:1,isha:1},mosque:null,iq:{}};
+try{Object.assign(s,JSON.parse(localStorage.getItem("pr2")||"{}"))}catch(e){}
+if(!s.mset)s.method="auto";if(!T[s.lang])s.lang="fr";if(!C[s.city])s.city="Paris";
+const save=()=>{try{localStorage.setItem("pr2",JSON.stringify(s))}catch(e){}schedSoon()};
+const $=i=>document.getElementById(i),t=()=>T[s.lang],esc=x=>String(x).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";"),f=(k,o={})=>(t()[k]||T.en[k]).replace(/\{(\w)\}/g,(_,x)=>o[x]);
+const R=Math.PI/180,sin=x=>Math.sin(x*R),cos=x=>Math.cos(x*R),tan=x=>Math.tan(x*R),acos=x=>Math.acos(x)/R,fix=(x,a)=>x-a*Math.floor(x/a);
+function calc(y,m,d,lat,lng,fa,ia,af,mg){
+ const D=Date.UTC(y,m,d,12)/864e5+2440587.5-2451545;
+ const g=fix(357.529+.98560028*D,360),q=fix(280.459+.98564736*D,360),L=fix(q+1.915*sin(g)+.02*sin(2*g),360),e=23.439-3.6e-7*D;
+ const ra=fix(Math.atan2(cos(e)*sin(L),cos(L))/R,360)/15,eq=((q/15-ra+12)%24+24)%24-12,dec=Math.asin(sin(e)*sin(L))/R;
+ const noon=12-lng/15-eq,T_=a=>acos((-sin(a)-sin(lat)*sin(dec))/(cos(lat)*cos(dec)))/15;
+ const rise=noon-T_(.833),set=noon+T_(.833),night=24-(set-rise);
+ let fj=noon-T_(fa),is=ia==="m90"?set+1.5:noon+T_(ia);
+ if(isNaN(fj))fj=rise-night*fa/60;if(isNaN(is))is=set+night*ia/60;
+ const as=noon+T_(-Math.atan(1/(af+tan(Math.abs(lat-dec))))/R);
+ return{fajr:fj,sunrise:rise,dhuhr:noon,asr:as,maghrib:mg?noon+T_(mg):set,isha:is,_b:Date.UTC(y,m,d)};
+}
+const loc=()=>s.mosque||s.pos||{lat:C[s.city][0],lng:C[s.city][1],tz:C[s.city][2]};
+function dayYMD(y,m,d){
+ const l=loc(),mt=effMethod(),[fa,ia,mg]=M[mt],r=calc(y,m,d,l.lat,l.lng,fa,ia,+s.asr,mg),o={};
+ P.forEach(([k])=>o[k]=Math.round((r._b+r[k]*36e5)/6e4)*6e4);
+ const of=OFF[mt];if(of)for(const k in of)o[k]+=of[k]*6e4;
+ const pe=preEntry();if(pe&&pe.ad)for(const k in pe.ad){const q=pe.ad[k].match(/^(\d{1,2}):(\d{2})$/);if(q)o[k]+=(+q[1]*60+ +q[2]-hmOf(o[k]))*6e4}
+ const aj=s.adj||{};for(const k in aj)if(+aj[k])o[k]+=+aj[k]*6e4;
+ return o;
+}
+function day(off){const l=loc(),p=new Intl.DateTimeFormat("en-CA",{timeZone:l.tz,year:"numeric",month:"2-digit",day:"2-digit"}).format(Date.now()+off*864e5).split("-").map(Number);return applyAd(dayYMD(p[0],p[1]-1,p[2]))}
+const pname=(k,n)=>k==="sunrise"?f("sr"):n;
+const fmt=ms=>!isFinite(ms)?"—":new Intl.DateTimeFormat(t().l,{timeZone:loc().tz,hour:"2-digit",minute:"2-digit",hourCycle:s.h12?"h12":"h23",numberingSystem:"latn"}).format(ms);
+const pad=n=>String(n).padStart(2,"0"),fired=new Set();
+function beep(){if(s.snd===0)return;try{const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();o.frequency.value=528;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.15,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+1.6);o.start();o.stop(a.currentTime+1.6)}catch(e){}}
+function alertP(n,lead,iq){const msg=iq?f("aq",{n}):lead>0?f("aN",{n,m:lead}):f("a0",{n});const e=$("toast");e.textContent=msg;e.style.display="block";setTimeout(()=>e.style.display="none",9000);if(!(s.adn&&lead===0&&!iq))beep();if(s.vib!==0)try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(x){}try{if(Notification.permission==="granted")notif(msg)}catch(x){}}
+function build(){
+ const L=t();document.documentElement.lang=s.lang;document.documentElement.dir=(s.lang==="ar"||s.lang==="ur")?"rtl":"ltr";document.title=L.ti;
+ document.querySelectorAll("[data-i]").forEach(e=>e.textContent=L[e.dataset.i]??T.en[e.dataset.i]);
+ $("selLang").innerHTML=Object.keys(T).map(k=>`<option value="${k}">${T[k].n}</option>`).join("");$("selLang").value=s.lang;
+ {let dn;try{dn=new Intl.DisplayNames([L.l],{type:"region"})}catch(e){}const nm=c=>{try{return dn.of(c)||c}catch(e){return c}};$("selCity").innerHTML=Object.keys(G).sort((a,b)=>nm(a).localeCompare(nm(b),s.lang)).map(c=>`<optgroup label="${nm(c)}">${G[c].slice(1).map(x=>`<option>${x[0]}</option>`).join("")}</optgroup>`).join("");$("selCity").value=s.city}
+ $("selMethod").value=s.method;$("selAsr").value=s.asr;
+ $("selLead").innerHTML=[0,5,10,15].map(n=>`<option value="${n}">${n?f("rb",{n}):L.r0}</option>`).join("");$("selLead").value=s.lead;
+ $("list").innerHTML=P.map(([k,n,a])=>`<li id="r-${k}"><div class="n"><b>${pname(k,n)}</b>${k==="sunrise"&&(s.lang==="ar"||s.lang==="ur")?"":`<span class="ar" lang="ar">${a}</span>`}</div><span class="t"><span id="t-${k}"></span><small class="iq" id="i-${k}"></small></span>${k==="sunrise"?'<span style="width:40px"></span>':`<button class="ok" type="button" id="k-${k}" aria-pressed="false" aria-label="✓ ${n}">✓</button>`}${k==="sunrise"?'<span style="width:44px"></span>':`<button class="bell" type="button" id="b-${k}" aria-label="${L.rem} ${n}" aria-pressed="${!!s.bells[k]}">🔔</button>`}</li>`).join("");
+ P.forEach(([k])=>{const b=$("b-"+k);if(b)b.onclick=()=>{s.bells[k]=s.bells[k]?0:1;b.setAttribute("aria-pressed",!!s.bells[k]);save();if(s.bells[k]&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission()}});
+   $("search").placeholder=L.se;$("search").setAttribute("aria-label",L.se);$("recQ").placeholder=TX("recs");drawSur();renderMq();renderRec();drawTr();drawRes();initDone();initT();initCal();renderSet();renderAdhan();
+}
+function drawSur(){const q=$("search").value.trim().toLowerCase().replace(/[-']/g,"");
+ $("sur").innerHTML=SUR.map((n,i)=>[i+1,n]).filter(([i,n])=>!q||n.toLowerCase().replace(/[-']/g,"").includes(q)||String(i)===q).map(([i,n])=>`<a href="#" data-n="${i}"><span>${i}</span>${n}</a>`).join("")}
+function arc(d,now){
+ const x=v=>150+130*Math.cos(Math.PI*(1-v)),y=v=>150-130*Math.sin(Math.PI*(1-v));
+ const fr=ms=>Math.min(1,Math.max(0,(ms-d.fajr)/(d.isha-d.fajr))),v=fr(now),pa=(a,b)=>`M${x(a)} ${y(a)} A130 130 0 0 1 ${x(b)} ${y(b)}`;
+ let h=`<path class="track" d="${pa(0,1)}"/>`;if(v>0)h+=`<path class="done" d="${pa(0,v)}"/>`;
+ P.forEach(([k])=>h+=`<circle class="dot" cx="${x(fr(d[k]))}" cy="${y(fr(d[k]))}" r="5"/>`);
+ if(now>=d.fajr&&now<=d.isha)h+=`<circle class="now" cx="${x(v)}" cy="${y(v)}" r="8"/>`;
+ $("arc").innerHTML=h;
+}
+function tick(){
+ const now=Date.now(),d=day(0),dm=day(1),l=loc(),L=t();
+ const ev=[...P.map(([k,n,a])=>({k,n,a,ms:d[k]})),{k:"fajr",n:"Fajr",a:"الفجر",ms:dm.fajr}],nx=ev.find(e=>e.ms>now)||ev[6];
+ $("city").textContent=s.mosque?"🕌 "+s.mosque.name:s.pos?(s.pos.name||L.pos):s.city;
+ $("date").textContent=new Intl.DateTimeFormat(L.l,{timeZone:l.tz,dateStyle:"full"}).format(now)+" · "+new Intl.DateTimeFormat(L.l+"-u-ca-islamic-umalqura",{timeZone:l.tz,dateStyle:"long"}).format(now+(s.hc||0)*864e5);
+ const nm=pname(nx.k,nx.n),ar=(s.lang==="ar"||s.lang==="ur")&&nx.k==="sunrise"?"":`<small class="ar" lang="ar">${nx.a}</small>`;
+ $("next").innerHTML=`${nm}${ar}`;
+ const c=Math.max(0,Math.floor((nx.ms-now)/1e3));
+ $("cd").innerHTML=`${pad(Math.floor(c/3600))}:${pad(Math.floor(c/60)%60)}:${pad(c%60)}<span>${f("bef",{n:nm,t:fmt(nx.ms)})}</span>`;
+ P.forEach(([k])=>{$("t-"+k).textContent=fmt(d[k]);const im=k==="sunrise"?null:iqMs(k,d);let tx=im?L.iq+" "+fmt(im):"";const pe=preEntry();if(k==="dhuhr"&&pe&&pe.jumua&&isFri(d.dhuhr)&&!((s.iq||{}).jumua||"").trim())tx="Jumu’a "+pe.jumua.join(" · ");$("i-"+k).textContent=tx;$("r-"+k).className=(nx.ms===d[k]&&nx.k===k)?"on":(d[k]<now?"past":"")});
+ arc(d,now);extras(d,dm,now);if(!$("vK").hidden)drawQ();{const sg=[s.city,s.mosque&&s.mosque.name,s.pos&&s.pos.lat,s.method,s.asr,s.lang,s.hc].join();if(!$("vC").hidden&&sg!==window._sg){window._sg=sg;drawCal()}}
+ P.forEach(([k,n])=>{if(NATIVE||s.ntf===0||!s.bells[k])return;const at=d[k]-s.lead*6e4,id=new Date(d[k]).toDateString()+k;if(now>=at&&now<at+6e4&&!fired.has(id)){fired.add(id);alertP(pname(k,n),s.lead)}if(s.adn&&now>=d[k]&&now<d[k]+45e3&&!fired.has(id+"a")){fired.add(id+"a");playAdhan(k)}if(s.iqn&&k!=="sunrise"){const im=iqMs(k,d);if(im&&im!==d[k]){const i2=id+"q";if(now>=im&&now<im+6e4&&!fired.has(i2)){fired.add(i2);alertP(pname(k,n),0,1)}}}});
+}
+const PRE=[{re:/mohamm?ed\s*(v|5)\b|محمد\s*الخامس/i,lat:48.9226,lng:2.2535,ad:{dhuhr:"14:00"},iq:{fajr:"+5",dhuhr:"+5",asr:"+5",maghrib:"+5",isha:"+0"},jumua:["13:00","14:00"]}];
+function preEntry(){const m=s.mosque;return m&&PRE.find(x=>x.re.test(m.name)&&hav(x.lat,x.lng,m.lat,m.lng)<4)||null}
+function applyAd(d){const l=loc(),pe=preEntry(),ad=(pe&&pe.ad)||(hav(48.9226,2.2535,l.lat,l.lng)<2.5?{dhuhr:"14:00"}:null);if(!ad)return d;const md=x=>((x%1440)+1440)%1440,of=ms=>md(hmOf(ms)-(new Date(ms).getUTCHours()*60+new Date(ms).getUTCMinutes()));
+ for(const k in ad){const m=ad[k].match(/^(\d{1,2}):(\d{2})$/);if(m)d[k]=d[k]+(+m[1]*60+ +m[2]-hmOf(d[k]))*6e4}return d}
+function preset(){const p=preEntry();return p?p.iq:{}}
+function hmOf(ms){const p=new Intl.DateTimeFormat("en-GB",{timeZone:loc().tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(ms),g=n=>+p.find(x=>x.type===n).value;return g("hour")*60+g("minute")}
+function iqVal(k){return(((s.iq||{})[k])||preset()[k]||"").trim()}
+function isFri(ms){return new Intl.DateTimeFormat("en-US",{timeZone:loc().tz,weekday:"short"}).format(ms)==="Fri"}
+function iqMs(k,d){const v=iqVal(k==="dhuhr"&&isFri(d.dhuhr)&&iqVal("jumua")?"jumua":k);let m=v.match(/^\+?(\d{1,3})$/);if(m)return d[k]+m[1]*6e4;m=v.match(/^(\d{1,2})[:h](\d{2})$/);if(!m)return null;
+ const hm=ms=>{const p=new Intl.DateTimeFormat("en-GB",{timeZone:loc().tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(ms),g=n=>+p.find(x=>x.type===n).value;return g("hour")*60+g("minute")};
+ return d[k]+(+m[1]*60+ +m[2]-hm(d[k]))*6e4}
+function renderMq(){
+ $("mqx").hidden=!s.mosque;$("chkAuto").checked=s.auto!==false;
+ $("iqs").innerHTML=[...P.filter(([k])=>k!=="sunrise"),["jumua","Jumu’a"]].map(([k,n])=>`<input type="text" inputmode="text" id="q-${k}" aria-label="${t().iq} ${n}" placeholder="${preset()[k]||n}" value="${esc((s.iq||{})[k]||"")}">`).join("");
+ [...P,["jumua"]].forEach(([k])=>{const e=$("q-"+k);if(e)e.oninput=()=>{s.iq=s.iq||{};s.iq[k]=e.value;save();tick()}});
+}
+const hav=(a,b,c,d)=>{const x=(c-a)*R,y=(d-b)*R,z=Math.sin(x/2)**2+Math.cos(a*R)*Math.cos(c*R)*Math.sin(y/2)**2;return 12742*Math.asin(Math.sqrt(z))};
+let lastPos=null;
+function getPos(){return new Promise((ok,ko)=>{
+ if(lastPos&&Date.now()-lastPos.t<6e5)return ok(lastPos);
+ if(!window.isSecureContext)return ko({code:"sec"});
+ if(!navigator.geolocation)return ko({code:2});
+ navigator.geolocation.getCurrentPosition(p=>{lastPos={lat:p.coords.latitude,lng:p.coords.longitude,t:Date.now()};ok(lastPos)},e=>ko({code:e&&e.code||2}),{timeout:20000,maximumAge:6e5,enableHighAccuracy:false})})}
+const OPS=["https://overpass.private.coffee/api/interpreter","https://overpass-api.de/api/interpreter","https://z.overpass-api.de/api/interpreter","https://lz4.overpass-api.de/api/interpreter"];
+async function overpass(q){let err;for(const u of OPS){const c=new AbortController(),tm=setTimeout(()=>c.abort(),18000);
+ try{const r=await fetch(u,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q),signal:c.signal});if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();if(!j.elements)throw new Error("bad");clearTimeout(tm);return j}catch(e){clearTimeout(tm);err=e}}
+ throw err||new Error("ov")}
+function errMsg(e){const L=t(),c=e&&e.code;return c==="sec"?L.eg3:c===1?L.eg1:(c===2||c===3)?L.eg2:c==="none"?L.enm:L.eov}
+function setSt(m,err){$("mqStatus").textContent=m||"";$("mqRetry").hidden=!err}
+async function nearest(from){
+ const here=from||await getPos(),tzv=(from&&from.tz)||Intl.DateTimeFormat().resolvedOptions().timeZone;
+ for(const rad of [3000,10000,30000]){
+  const j=await overpass(`[out:json][timeout:20];(nwr(around:${rad},${here.lat},${here.lng})[amenity=place_of_worship][religion=muslim];nwr(around:${rad},${here.lat},${here.lng})[building=mosque];);out center 80;`);
+  const seen=new Set(),L=j.elements.map(e=>{const g=e.tags||{};return{name:g.name||g["name:fr"]||g["name:ar"]||g["name:en"]||g.operator||"Mosque",lat:e.lat??(e.center&&e.center.lat),lng:e.lon??(e.center&&e.center.lon),tz:tzv}}).filter(m=>m.lat!=null&&m.lng!=null).map(m=>({...m,km:hav(here.lat,here.lng,m.lat,m.lng)})).sort((a,b)=>a.km-b.km).filter(m=>{const k=m.name+m.lat.toFixed(3)+m.lng.toFixed(3);if(seen.has(k))return false;seen.add(k);return true}).slice(0,8);
+  if(L.length)return L}
+ return []}
+const pick=m=>({name:m.name,lat:m.lat,lng:m.lng,tz:m.tz,km:m.km});
+async function findMosques(from){
+ const btn=$("mqf"),box=$("mqlist"),old=btn.textContent;btn.textContent="…";box.innerHTML="";
+ try{const L=await nearest(from);if(!L.length)throw{code:"none"};
+  L.forEach(m=>{const b=document.createElement("button");b.type="button";b.textContent=`🕌 ${m.name} · ${m.km.toFixed(1)} km`;b.onclick=()=>{s.mosque=pick(m);s.auto=false;save();renderMq();tick();box.innerHTML="";setSt(f("mn",{n:m.name,d:m.km.toFixed(1)}))};box.appendChild(b)});
+ }catch(e){box.textContent=errMsg(e)}
+ btn.textContent=old;
+}
+async function searchPlace(){const q=$("plq").value.trim();if(!q)return;const btn=$("plGo"),box=$("mqlist"),old=btn.textContent;btn.textContent="…";box.innerHTML="";
+ try{let p=null;
+  try{const r=await fetch("https://geocoding-api.open-meteo.com/v1/search?count=1&language="+s.lang+"&name="+encodeURIComponent(q)),j=await r.json(),g=j.results&&j.results[0];if(g)p={lat:g.latitude,lng:g.longitude,tz:g.timezone,name:g.name}}catch(e){}
+  if(!p){const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q="+encodeURIComponent(q));if(!r.ok)throw new Error("HTTP "+r.status);const j=await r.json();if(!j.length){box.textContent=t().enf;btn.textContent=old;return}p={lat:+j[0].lat,lng:+j[0].lon,tz:Intl.DateTimeFormat().resolvedOptions().timeZone}}
+  if(p.name&&p.tz){s.pos={lat:p.lat,lng:p.lng,tz:p.tz,name:p.name};s.mosque=null;s.auto=false;save();renderMq();tick()}
+  btn.textContent=old;await findMosques(p);return}
+ catch(e){box.textContent=t().eov}
+ btn.textContent=old}
+async function autoMosque(force){
+ if(s.auto===false)return;
+ if(!force&&s.mosque&&Date.now()-(s.at||0)<36e5){setSt(f("mn",{n:s.mosque.name,d:s.mosque.km!=null?(+s.mosque.km).toFixed(1):"?"}));return}
+ setSt(t().ms);
+ try{const L=await nearest();if(!L.length)throw{code:"none"};const m=L[0];s.mosque=pick(m);s.at=Date.now();save();renderMq();tick();setSt(f("mn",{n:m.name,d:m.km.toFixed(1)}))}
+ catch(e){setSt(errMsg(e),1)}
+}
+$("mqf").onclick=()=>findMosques();$("plGo").onclick=searchPlace;$("plq").onkeydown=e=>{if(e.key==="Enter")searchPlace()};$("mqRetry").onclick=()=>{lastPos=null;s.auto=true;save();renderMq();autoMosque(true)};
+$("mqx").onclick=()=>{s.mosque=null;s.auto=false;save();renderMq();tick()};
+$("chkAuto").onchange=e=>{s.auto=e.target.checked;save();if(s.auto)autoMosque(true)};
+const REC=[["ar.alafasy","Mishary Alafasy"],["ar.abdulbasitmurattal","Abdul Basit (Murattal)"],["ar.husary","Mahmoud Khalil Al-Husary"],["ar.minshawi","Al-Minshawi"],["ar.mahermuaiqly","Maher Al Muaiqly"],["ar.abdurrahmaansudais","Abdurrahman As-Sudais"]];
+const au=new Audio();let rd=null,page=1;
+const ad=n=>String(n).replace(/\d/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
+const norm=x=>String(x).toLowerCase().normalize("NFD").replace(/[\u064B-\u065F\u0670\u0300-\u036f]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");
+function renderRec(){const q=norm(($("recQ")||{}).value||""),op=x=>`<option value="${x[0]}">${x[1]}</option>`;
+ let o=(MQF.length?`<optgroup label="⭐ ${TX("fav")}">${MQF.map(op).join("")}</optgroup>`:"")+REC.map(([v,n])=>`<option value="${v}">${n}</option>`).join("");
+ if(MQL.length){const l=MQL.filter(x=>!q||x[2].includes(q)||x[0]===s.rec);o+=`<optgroup label="mp3quran.net · ${l.length}/${MQL.length}">${l.map(op).join("")}</optgroup>`}
+ $("selRec").innerHTML=o;$("selRec").value=s.rec||"ar.alafasy"}
+function setPlay(on){$("qplay").textContent=(on?"⏸ ":"▶ ")+(on?t().ps:t().pl)}
+function mark(){document.querySelectorAll(".ay.cur").forEach(e=>e.classList.remove("cur"));if(rd&&rd.i>=0){const e=$("v-"+rd.i);if(e){e.classList.add("cur");e.scrollIntoView({behavior:"smooth",block:"nearest"})}}}
+function stop(){au.pause();au.removeAttribute("src");au.load();if(rd)rd.i=-1;mark();setPlay(false)}
+function drawP(){let o="";rd.v.forEach((x,i)=>{if(x.no===1){o+=`<div class="sh ar" lang="ar">${x.sn}</div>`;if(x.s!==1&&x.s!==9)o+='<div class="ar" style="text-align:center">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>'}o+=`<span class="ay" id="v-${i}" data-i="${i}">${x.ar} <span class="end">﴿${ad(x.no)}﴾</span></span> `+(x.tr?`<span class="tv" dir="${s.lang==="ur"?"rtl":"ltr"}">${esc(x.tr)}</span>`:"")});$("qverses").innerHTML=`<div class="pg" lang="ar" dir="rtl">${o}</div>`;$("pg").value=page;mark()}
+function playAt(i){if(!rd)return;if(i>=rd.v.length){if(page<604)loadPage(page+1,true);else stop();return}rd.i=i;au.src=rd.v[i].au;au.play().then(()=>setPlay(true)).catch(()=>setPlay(false));mark()}
+let MQH="",MQS={},mqSrc="";
+const isMq=()=>(s.rec||"").startsWith("mq:");
+let MQL=[],MQF=[];
+const FV=[/اسلام.*صبحي/,/رعد.*الكردي/,/ياسر.*الدوسري/,/ماهر.*المعيقلي/,/هشام.*الهراز/,/بدر.*التركي/],FL=[/islam.*s[uo]b?h[iy]/,/ra.?ad.*kurd/,/yas+er.*d[ou]s/,/maher.*m\w{1,4}q/,/(hicham|hisham|hesham|hichem).*har?raz/,/badr.*(turk|tork)/];
+async function loadMq(){try{const lg={fr:"fr",en:"eng",ar:"ar",tr:"tr",es:"es",de:"de"}[s.lang]||"eng",u="https://www.mp3quran.net/api/v3/reciters?language=",r=await fetch(u+lg);if(!r.ok)throw 0;const j=await r.json(),L=[];
+ j.reciters.forEach(c=>c.moshaf.forEach(m=>{if(!m.server)return;MQS[m.server]=new Set(String(m.surah_list).split(",").map(Number));L.push(["mq:"+esc(m.server),esc(c.name)+(m.name?" — "+esc(m.name):""),norm(c.name+" "+(m.name||"")),c.id])}));
+ const ids=FV.map(()=>new Set());
+ try{const a=lg==="ar"?j:await(await fetch(u+"ar")).json();a.reciters.forEach(c=>FV.forEach((re,i)=>{if(re.test(norm(c.name)))ids[i].add(c.id)}))}catch(e){}
+ MQF=[];FV.forEach((re,i)=>L.forEach(x=>{if(ids[i].has(x[3])||FL[i].test(x[2]))MQF.push(x)}));
+ MQL=L;MQH="1";renderRec()}catch(e){toast(TX("mqe"))}}
+document.addEventListener("input",e=>{if(e.target.id==="recQ")renderRec()});
+function mqToggle(){const sv=s.rec.slice(3).replace(/\/?$/,"/"),sn=rd.v[0].s,u=sv+String(sn).padStart(3,"0")+".mp3",ok=MQS[s.rec.slice(3)];
+ if(ok&&!ok.has(sn)){toast(TX("mqn"));return}
+ if(au.src&&mqSrc===u){if(au.paused){au.play();setPlay(true)}else{au.pause();setPlay(false)}return}
+ mqSrc=u;au.src=u;au.play().then(()=>setPlay(true)).catch(()=>{setPlay(false);toast(t().qe)})}
+const DU=[["Après l’adhan","After the adhan","اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ، وَالصَّلَاةِ الْقَائِمَةِ، آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ"],
+["Après les ablutions","After wudu","أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ"],
+["En entrant à la mosquée","Entering the mosque","اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ"],
+["En sortant de la mosquée","Leaving the mosque","اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ"],
+["Après la prière","After the prayer","أَسْتَغْفِرُ اللَّهَ (×3)، اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ"],
+["Aide pour le dhikr","Help in remembrance","اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ"],
+["Au réveil","Upon waking","الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ"],
+["Avant de dormir","Before sleeping","بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا"],
+["Matin et soir (×3)","Morning & evening (×3)","بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ"],
+["Sayyid al-istighfar","Sayyid al-istighfar","اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ"],
+["Avant et après le repas","Before and after eating","بِسْمِ اللَّهِ — الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ"],
+["En sortant de chez soi","Leaving home","بِسْمِ اللَّهِ، تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ"],
+["Dans la détresse (Yunus)","In distress (Yunus)","لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ"],
+["Ici-bas et dans l’au-delà","This world and the next","رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ"],
+["Science et facilité","Knowledge and ease","رَبِّ زِدْنِي عِلْمًا — رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي"]];
+function drawD(){$("dl").innerHTML=DU.map(([a,b,c])=>`<div class="vs"><b>${s.lang==="fr"?a:b}</b><div class="ar" lang="ar" dir="rtl" style="text-align:center">${c}</div></div>`).join("")}
+const TV=/[?&]tv=1/.test(location.search)||(/Android|AFT/i.test(navigator.userAgent)&&!navigator.maxTouchPoints),NATIVE=!TV&&!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()),LN=NATIVE&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
+let schedT=0,schedSig="";
+function schedSoon(){if(!NATIVE||!LN)return;clearTimeout(schedT);schedT=setTimeout(sched,1500)}
+async function nativePerm(){try{const p=await LN.requestPermissions();if(p.display!=="granted")return false;if(LN.checkExactNotificationSetting){const e=await LN.checkExactNotificationSetting();if(e.exact_alarm!=="granted")await LN.changeExactNotificationSetting()}return true}catch(e){return false}}
+async function sched(force){
+ const sig=JSON.stringify([todayKey(),s.city,s.pos,s.mosque,s.method,s.asr,s.lead,s.bells,s.adn,s.ntf,s.adj,s.hc,s.lang,s.iq]);
+ if(force!==true&&sig===schedSig)return;schedSig=sig;
+ try{
+  const pend=await LN.getPending();if(pend.notifications.length)await LN.cancel({notifications:pend.notifications});
+  if(s.ntf===0)return;
+  for(const[id,name,sound]of[["adhan","Adhan","adhan.wav"],["adhan_fajr","Adhan Fajr","adhan_fajr.wav"],["reminder","Rappels / Reminders"]])await LN.createChannel({id,name,importance:5,visibility:1,vibration:true,...(sound?{sound}:{})});
+  const now=Date.now(),out=[];
+  for(let o=0;o<7;o++){const d=day(o);P.forEach(([k,n],i)=>{if(k==="sunrise"||!s.bells[k])return;const nm=pname(k,n),base=o*100+i*2;
+   if(s.lead>0&&d[k]-s.lead*6e4>now)out.push({id:base+1,title:nm,body:f("aN",{n:nm,m:s.lead}),schedule:{at:new Date(d[k]-s.lead*6e4),allowWhileIdle:true},channelId:"reminder"});
+   if((s.adn||s.lead===0)&&d[k]>now){const a=!!s.adn,fj=k==="fajr";out.push({id:base+2,title:nm,body:f("a0",{n:nm}),schedule:{at:new Date(d[k]),allowWhileIdle:true},channelId:a?(fj?"adhan_fajr":"adhan"):"reminder",sound:a?(fj?"adhan_fajr.wav":"adhan.wav"):undefined})}})}
+  if(out.length)await LN.schedule({notifications:out})
+ }catch(e){schedSig=""}}
+function initTV(){if(!TV)return;document.documentElement.classList.add("tv");
+ if(!s.tvInit){P.forEach(([k])=>{if(k!=="sunrise")s.bells[k]=1});s.adn=1;s.tvInit=1;save()}
+ const wl=()=>{try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}};wl();document.addEventListener("visibilitychange",()=>{if(!document.hidden)wl()});
+ const sel='button:not([hidden]),input:not([type=hidden]),select,a[href],[tabindex]:not([tabindex="-1"])',vis=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&!e.disabled&&getComputedStyle(e).visibility!=="hidden"};
+ document.addEventListener("keydown",ev=>{const k=ev.key;
+  if(k==="Escape"||k==="GoBack"||k==="BrowserBack"){const b=$("qback");if(b&&!$("qread").hidden){b.click();ev.preventDefault()}return}
+  const d={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[k];if(!d)return;
+  const a=document.activeElement;if(a&&a.tagName==="INPUT"&&d[0]&&a.type!=="checkbox"&&a.type!=="range")return;
+  ev.preventDefault();
+  const list=[...document.querySelectorAll(sel)].filter(vis),ok=a&&a!==document.body&&vis(a),r0=ok?a.getBoundingClientRect():{left:0,top:0,width:0,height:0},cx=r0.left+r0.width/2,cy=r0.top+r0.height/2;let best=null,bs=1e9;
+  list.forEach(e=>{if(e===a)return;const r=e.getBoundingClientRect(),x=r.left+r.width/2-cx,y=r.top+r.height/2-cy,fw=d[0]?x*d[0]:y*d[1],ort=d[0]?Math.abs(y):Math.abs(x);if(fw<=4&&ok)return;const sc=fw+ort*2.5;if(sc<bs){bs=sc;best=e}});
+  if(best){best.focus({preventScroll:true});best.scrollIntoView({block:"center",inline:"center",behavior:"smooth"})}})}
+async function askNtf(){if(TV||s.askDone)return;let need=true;
+ try{if(NATIVE&&LN){const p=await LN.checkPermissions();need=p.display!=="granted"}else need="Notification"in window&&Notification.permission==="default"}catch(e){}
+ if(!need)return;
+ $("ntfTxt").textContent=TX("na")+(NATIVE?"":" "+TX("naw"));$("ntfNo").textContent=TX("nan");$("ntfYes").textContent=TX("nay");$("ntfAsk").hidden=false;
+ $("ntfNo").onclick=()=>{s.askDone=1;save();$("ntfAsk").hidden=true};
+ $("ntfYes").onclick=async()=>{let ok=false;
+  try{ok=NATIVE&&LN?await nativePerm():(await Notification.requestPermission())==="granted"}catch(e){}
+  s.askDone=1;if(ok){s.adn=1;s.ntf=1;if($("chkAdn"))$("chkAdn").checked=true;if($("chkNtf"))$("chkNtf").checked=true}
+  save();$("ntfAsk").hidden=true;toast(ok?TX("nao"):TX("nae"));if(ok&&NATIVE&&LN)sched(true)}}
+const TR={fr:"fr.hamidullah",en:"en.sahih",tr:"tr.diyanet",es:"es.cortes",de:"de.bubenheim",id:"id.indonesian",ur:"ur.jalandhry"};
+function drawTr(){const b=$("qtr");b.hidden=!TR[s.lang];b.textContent=(s.tr?"✓ ":"")+t().tl;b.setAttribute("aria-pressed",!!s.tr)}
+function drawRes(){const b=$("qres");b.hidden=!s.qp;b.textContent="📖 "+f("rq",{n:s.qp})}
+const TX=k=>t()[k]||T.en[k];
+function notif(m){const o={icon:"icons/icon-192.png"};try{if(navigator.serviceWorker)navigator.serviceWorker.getRegistration().then(r=>r?r.showNotification(m,o):new Notification(m,o)).catch(()=>{});else new Notification(m,o)}catch(e){}}
+function todayKey(){return new Intl.DateTimeFormat("en-CA",{timeZone:loc().tz,year:"numeric",month:"2-digit",day:"2-digit"}).format(Date.now())}
+function initDone(){P.forEach(([k])=>{const b=$("k-"+k);if(b)b.onclick=()=>{const d=todayKey(),o=s.dn=s.dn||{};o[d]=o[d]||{};o[d][k]=o[d][k]?0:1;Object.keys(o).sort().slice(0,-30).forEach(x=>delete o[x]);save();b.setAttribute("aria-pressed",!!o[d][k])}})}
+const HF=new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn",{timeZone:"UTC",day:"numeric",month:"numeric"});
+const hjP=ms=>{const p=HF.formatToParts(ms);return{d:+p.find(x=>x.type==="day").value,m:+p.find(x=>x.type==="month").value}};
+let hjC={k:""};
+function nextEv(){const tk=todayKey(),k=tk+(s.hc||0);if(hjC.k===k)return hjC;const[y,m,d]=tk.split("-").map(Number),b=Date.UTC(y,m-1,d,12)+(s.hc||0)*864e5,E={"1-9":"e1","1-10":"e2","10-12":"e3","1-1":"e4"},o=[];
+ for(let i=0;i<400&&o.length<2;i++){const n=E[hjP(b+i*864e5).d+"-"+hjP(b+i*864e5).m];if(n)o.push([n,i])}
+ return hjC={k,e:o,m:hjP(b).m}}
+function extras(d,dm,now){
+ const E=nextEv(),l3=d.maghrib+(dm.fajr-d.maghrib)*2/3;
+ $("ex").innerHTML=`${TX("l3")} <b>${fmt(l3)}</b> · ${TX("du")} <b>${fmt(d.sunrise+9e5)}</b>`;
+ let h=E.m===9?`${TX("im")} <b>${fmt(d.fajr-6e5)}</b> · ${TX("ift")} <b>${fmt(d.maghrib)}</b>`:"";
+ E.e.forEach(([n,i])=>{h+=(h?"<br>":"")+(i?TX("ein").replace("{e}",TX(n)).replace("{n}",i):TX("e0").replace("{e}",TX(n)))});
+ $("ev").innerHTML=h;
+ const dk=todayKey(),o=(s.dn||{})[dk]||{};P.forEach(([k])=>{const b=$("k-"+k);if(b)b.setAttribute("aria-pressed",!!o[k])})}
+const API="https://api.alquran.cloud/v1";
+async function jget(u){const r=await fetch(u);if(!r.ok)throw new Error("HTTP "+r.status);const d=await r.json();if(d.code!==200)throw new Error("API "+d.code);return d.data}
+const CLEAN=/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640\uFEFF]/g;
+async function loadPage(p,auto){
+ const L=t(),rec=isMq()?"ar.alafasy":(s.rec||"ar.alafasy");stop();rd=null;page=p;s.qp=p;save();$("pg").value=p;$("qverses").textContent=L.ld;$("qplay").hidden=true;
+ try{
+  const ed=s.tr&&TR[s.lang],[a,b,c]=await Promise.all([jget(`${API}/page/${p}/quran-uthmani`),jget(`${API}/page/${p}/${rec}`).catch(()=>null),ed?jget(`${API}/page/${p}/${ed}`).catch(()=>null):null]);
+  const am={},tm={};if(b)b.ayahs.forEach(y=>am[y.number]=y.audio);if(c)c.ayahs.forEach(y=>tm[y.number]=y.text);
+  rd={i:-1,v:a.ayahs.map(x=>{let w=x.text.replace(/\uFEFF/g,"").trim().split(" "),sn=x.surah.number;if(x.numberInSurah===1&&sn!==1&&sn!==9&&w[0].replace(CLEAN,"").startsWith("بسم"))w=w.slice(4);return{ar:w.join(" "),au:am[x.number]||`https://cdn.islamic.network/quran/audio/128/${rec}/${x.number}.mp3`,no:x.numberInSurah,s:sn,sn:x.surah.name,tr:tm[x.number]||""}})};
+ }catch(e){$("qverses").innerHTML=`${L.qe}<br><small>${esc(e&&e.message||e)}</small>`;return}
+ drawP();$("qplay").hidden=false;setPlay(false);if(auto)playAt(0);window.scrollTo({top:0});
+}
+async function show(n){
+ $("qlist").hidden=true;$("qread").hidden=false;$("qverses").textContent=t().ld;$("qplay").hidden=true;
+ try{const d=await jget(`${API}/surah/${n}/quran-uthmani?offset=0&limit=1`);loadPage(d.ayahs[0].page)}
+ catch(e){stop();rd=null;const m=`${t().qe}<br><small>${esc(e&&e.message||e)}</small>`;$("qverses").innerHTML=Q[n]?`<p class="pg" lang="ar" dir="rtl">${Q[n]}</p><p class="note">${m}</p>`:m}
+}
+au.onended=()=>{if(isMq()){setPlay(false);return}if(rd)playAt(rd.i+1)};
+$("sur").onclick=e=>{const a=e.target.closest("a");if(a){e.preventDefault();show(+a.dataset.n)}};
+$("qverses").onclick=e=>{const b=e.target.closest(".ay");if(b&&rd)playAt(+b.dataset.i)};
+$("qplay").onclick=()=>{if(!rd)return;if(isMq()){mqToggle();return}if(rd.i>=0&&!au.paused){au.pause();setPlay(false)}else if(rd.i>=0){au.play();setPlay(true)}else playAt(0)};
+$("qback").onclick=()=>{stop();rd=null;$("qread").hidden=true;$("qlist").hidden=false;drawRes()};$("qres").onclick=()=>{$("qlist").hidden=true;$("qread").hidden=false;loadPage(s.qp)};$("qtr").onclick=()=>{s.tr=s.tr?0:1;save();drawTr();if(rd)loadPage(page)};
+$("qread").addEventListener("click",e=>{const b=e.target.closest("[data-d]");if(b)loadPage(Math.min(604,Math.max(1,page+ +b.dataset.d)))});
+$("pg").onchange=e=>loadPage(Math.min(604,Math.max(1,Math.round(+e.target.value)||1)));
+$("selRec").onchange=e=>{s.rec=e.target.value;save();if(!$("qread").hidden&&rd)loadPage(page)};
+function applySet(){const r=document.documentElement;if(s.theme==="light"||s.theme==="dark")r.dataset.theme=s.theme;else delete r.dataset.theme;r.style.setProperty("--qs",s.qs||"1.75rem");$("tabS").title=$("tabS").ariaLabel=t().st}
+function renderSet(){
+ $("selTheme").value=s.theme||"auto";$("selHf").value=s.h12?1:0;$("selQs").value=s.qs||"1.75rem";
+ $("chkNtf").checked=s.ntf!==0;$("chkSnd").checked=s.snd!==0;$("chkVib").checked=s.vib!==0;$("chkIqn").checked=!!s.iqn;
+ $("adjs").innerHTML=P.map(([k,n])=>`<input type="number" id="a-${k}" min="-30" max="30" step="1" inputmode="numeric" aria-label="${pname(k,n)}" placeholder="${pname(k,n)}" value="${(s.adj||{})[k]||""}">`).join("");
+ P.forEach(([k])=>{$("a-"+k).oninput=e=>{s.adj=s.adj||{};s.adj[k]=Math.max(-30,Math.min(30,Math.round(+e.target.value)||0));save();tick()}});
+ applySet();
+}
+$("selTheme").onchange=e=>{s.theme=e.target.value;save();applySet()};
+$("selHf").onchange=e=>{s.h12=+e.target.value;save();tick();if(!$("vC").hidden)drawCal()};
+$("selQs").onchange=e=>{s.qs=e.target.value;save();applySet()};
+$("chkNtf").onchange=e=>{s.ntf=e.target.checked?1:0;save();if(s.ntf&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission()};
+$("chkSnd").onchange=e=>{s.snd=e.target.checked?1:0;save()};
+$("chkVib").onchange=e=>{s.vib=e.target.checked?1:0;save()};
+$("chkIqn").onchange=e=>{s.iqn=e.target.checked?1:0;save()};
+$("btnTest").onclick=()=>{if("Notification"in window&&Notification.permission==="default")Notification.requestPermission();alertP(pname("dhuhr","Dhuhr"),0);if(s.adn)playAdhan("dhuhr")};
+$("btnRs").onclick=()=>{if(confirm(t().rsc)){try{localStorage.removeItem("pr2")}catch(e){}location.reload()}};
+const SIL="data:audio/wav;base64,UklGRiwAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQgAAACAgICAgICAgA==";
+const cmu=n=>"https://commons.wikimedia.org/wiki/Special:FilePath/"+encodeURIComponent(n.replace(/ /g,"_"));
+const NM={fajr:[1,"Fajr"],dhuhr:[2,"Dhuhr"],asr:[3,"Asr"],maghrib:[4,"Maghrib"],isha:[5,"Isha"]};
+const VO={
+ doha:{n:"Doha — الدوحة",u:k=>{const[i,m]=NM[k]||NM.dhuhr;return`https://archive.org/download/adhan.recordings.from.doha.qatar/Adhan_Doha_Qatar_0${i}_${m}_Adhan.mp3`}},
+ makkah:{n:"Makkah — مكة المكرمة",u:()=>cmu("Adhan, Great Mosque of Mecca - Jan 21, 2013.webm")},
+ madinah:{n:"Madinah — المدينة المنورة",u:()=>cmu("33937 ejaz215 call-to-prayer-from-the-prophet-s-mo.ogg")},
+ beautiful:{n:"Beautiful adhan",u:()=>cmu("Beautiful adhan.ogg")},
+ aaqib:{n:"Aaqib Azeez",u:()=>cmu("The Adhan - Muslim Call to Prayer - Aaqib Azeez.mp3")}};
+const idb=(m,k,v)=>new Promise((ok,ko)=>{const r=indexedDB.open("prayer",1);r.onupgradeneeded=()=>r.result.createObjectStore("f");r.onerror=()=>ko(r.error);r.onsuccess=()=>{const tx=r.result.transaction("f",m==="get"?"readonly":"readwrite"),st=tx.objectStore("f"),q=m==="get"?st.get(k):m==="put"?st.put(v,k):st.delete(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>ko(q.error)}});
+const adA=new Audio();adA.preload="none";
+function toast(m){const e=$("toast");e.textContent=m;e.style.display="block";setTimeout(()=>e.style.display="none",7000)}
+function stopAdhan(){adA.pause();adA.removeAttribute("src");adA.load();$("adStop").hidden=true;$("toast").style.display="none"}
+async function adhanSrc(v,k){if(v==="custom"){try{const b=await idb("get","adhan");if(b)return URL.createObjectURL(b)}catch(e){}return s.adu||null}const o=VO[v];return o?o.u(k):null}
+async function playAdhan(k){
+ const v=k==="fajr"?(s.af||"doha"):(s.av||"doha");if(v==="beep"){beep();return}
+ const src=await adhanSrc(v,k);if(!src){beep();return}
+ adA.onerror=()=>{toast(t().aer);$("adStop").hidden=true};adA.onended=()=>{$("adStop").hidden=true};
+ adA.pause();adA.src=src;adA.volume=s.vol??.8;
+ try{await adA.play();$("adStop").hidden=false}catch(e){toast(t().aer)}
+}
+function renderAdhan(){
+ const o=Object.entries(VO).map(([k,x])=>`<option value="${k}">${x.n}</option>`).join("")+`<option value="custom">${t().adm}</option><option value="beep">${t().adb}</option>`;
+ $("selAv").innerHTML=o;$("selAf").innerHTML=o;$("selAv").value=s.av||"doha";$("selAf").value=s.af||"doha";
+ $("chkAdn").checked=!!s.adn;$("rngVol").value=s.vol??.8;$("adUrl").value=s.adu||"";$("adPv").textContent="▶ "+t().pl;
+ try{idb("get","adhan").then(b=>{$("adInfo").textContent=b?"📎 "+(s.adname||"audio"):"";$("adDel").hidden=!b}).catch(()=>{})}catch(e){}
+}
+addEventListener("pointerdown",()=>{adA.src=SIL;adA.muted=true;adA.play().then(()=>{adA.pause();adA.muted=false;adA.removeAttribute("src")}).catch(()=>{adA.muted=false})},{once:true});
+$("chkAdn").onchange=e=>{s.adn=e.target.checked?1:0;save();if(s.adn&&"Notification"in window&&Notification.permission==="default")Notification.requestPermission()};
+$("selAv").onchange=e=>{s.av=e.target.value;save()};
+$("selAf").onchange=e=>{s.af=e.target.value;save()};
+$("rngVol").oninput=e=>{s.vol=+e.target.value;adA.volume=s.vol;save()};
+$("adUrl").onchange=e=>{s.adu=e.target.value.trim();save()};
+$("adPv").onclick=()=>playAdhan("dhuhr");$("adPf").onclick=()=>playAdhan("fajr");
+$("adStop").onclick=stopAdhan;$("toast").onclick=stopAdhan;
+$("adFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;
+ try{await idb("put","adhan",f);s.adname=f.name;s.av="custom";s.af="custom";save();renderAdhan()}catch(x){toast(t().aer)}};
+$("adDel").onclick=async()=>{try{await idb("del","adhan")}catch(e){}s.adname="";if(s.av==="custom")s.av="doha";if(s.af==="custom")s.af="doha";save();renderAdhan()};
+const CAL={y:new Date().getFullYear(),m:new Date().getMonth(),all:false};
+const f24=ms=>!isFinite(ms)?"":new Intl.DateTimeFormat("en-GB",{timeZone:loc().tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(ms);
+function drawCal(){
+ const L=t(),l=loc(),y=CAL.y,dnm=new Intl.DateTimeFormat(L.l,{month:"long",timeZone:"UTC"}),mt=effMethod(),opt=[...$("selMethod").options].find(o=>o.value===mt);
+ $("cInfo").textContent=`${s.mosque?"🕌 "+s.mosque.name:s.pos?(s.pos.name||L.pos):s.city} · ${opt?opt.textContent:mt} · Asr: ${$("selAsr").selectedOptions[0].textContent}`;
+ $("cMn").textContent=CAL.all?String(y):`${dnm.format(Date.UTC(y,CAL.m,1))} ${y}`;$("cAll").setAttribute("aria-pressed",CAL.all);$("cY").value=y;
+ if(!s.mosque&&!s.pos)$("cCity").value=s.city;
+ const nowKey=new Intl.DateTimeFormat("en-CA",{timeZone:l.tz,year:"numeric",month:"2-digit",day:"2-digit"}).format(Date.now());
+ const wd=new Intl.DateTimeFormat(L.l,{weekday:"short",timeZone:"UTC"}),hj=new Intl.DateTimeFormat(L.l+"-u-ca-islamic-umalqura",{day:"numeric",month:"short",timeZone:"UTC"});
+ let o="<thead><tr><th></th>"+P.map(([k,n])=>`<th>${pname(k,n)}</th>`).join("")+"</tr></thead><tbody>";
+ (CAL.all?[...Array(12).keys()]:[CAL.m]).forEach(m=>{
+  if(CAL.all)o+=`<tr class="mh"><td colspan="7">${dnm.format(Date.UTC(y,m,1))}</td></tr>`;
+  const n=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+  for(let d=1;d<=n;d++){const dt=Date.UTC(y,m,d,12),r=dayYMD(y,m,d),key=`${y}-${pad(m+1)}-${pad(d)}`;
+   o+=`<tr class="${key===nowKey?"td":new Date(dt).getUTCDay()===5?"fr":""}"><td>${wd.format(dt)} ${d}<small>${hj.format(dt+(s.hc||0)*864e5)}</small></td>${P.map(([k])=>`<td>${fmt(r[k])}</td>`).join("")}</tr>`}
+ });
+ $("cT").innerHTML=o+"</tbody>";
+}
+function initCal(){const y=new Date().getFullYear();$("cY").innerHTML=[-3,-2,-1,0,1,2,3].map(i=>`<option>${y+i}</option>`).join("");$("cY").value=CAL.y;$("cCity").innerHTML=$("selCity").innerHTML;$("cCity").value=s.city}
+function setCity(v){s.city=v;s.pos=null;s.mosque=null;s.auto=false;save();renderMq();$("selCity").value=v;$("cCity").value=v;tick();if(!$("vC").hidden)drawCal()}
+$("cCity").onchange=e=>setCity(e.target.value);
+$("cY").onchange=e=>{CAL.y=+e.target.value;drawCal()};
+$("cPm").onclick=()=>{if(CAL.all)CAL.y--;else if(--CAL.m<0){CAL.m=11;CAL.y--}drawCal()};
+$("cNm").onclick=()=>{if(CAL.all)CAL.y++;else if(++CAL.m>11){CAL.m=0;CAL.y++}drawCal()};
+$("cAll").onclick=()=>{CAL.all=!CAL.all;drawCal()};
+$("cCsv").onclick=()=>{const y=CAL.y,rows=["Date,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha"];
+ for(let m=0;m<12;m++){const n=new Date(Date.UTC(y,m+1,0)).getUTCDate();for(let d=1;d<=n;d++){const r=applyAd(dayYMD(y,m,d));rows.push(`${y}-${pad(m+1)}-${pad(d)},`+P.map(([k])=>f24(r[k])).join(","))}}
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv"}));a.download=`prayer-times-${(s.mosque?s.mosque.name:s.pos?"gps":s.city).replace(/\W+/g,"_")}-${y}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
+const TABS={tabP:"vP",tabQ:"vQ",tabK:"vK",tabT:"vT",tabC:"vC",tabD:"vD",tabS:"vS"};
+function tab(id){for(const b in TABS){$(TABS[b]).hidden=b!==id;$(b).setAttribute("aria-pressed",b===id)}if(id==="tabQ"&&!MQH)loadMq();if(id==="tabD")drawD();if(id==="tabK")drawQ();if(id==="tabT")drawT();if(id==="tabC")drawCal()}
+Object.keys(TABS).forEach(b=>$(b).onclick=()=>tab(b));
+function qibla(){const l=loc(),p=l.lat*R,k=21.4225*R,d=(39.8262-l.lng)*R;return(Math.atan2(Math.sin(d),Math.cos(p)*Math.tan(k)-Math.sin(p)*Math.cos(d))/R+360)%360}
+let hd=null;
+function drawQ(){const q=qibla();$("qdeg").textContent=f("qd",{n:Math.round(q)});$("arw").setAttribute("transform",`rotate(${q} 110 120)`);$("rot").setAttribute("transform",`rotate(${hd==null?0:-hd} 110 120)`);$("cno").textContent=hd==null?t().cno:""}
+function orient(e){let a=e.webkitCompassHeading;if(a==null&&e.alpha!=null&&(e.absolute||e.type==="deviceorientationabsolute"))a=360-e.alpha;if(a!=null){hd=a;drawQ()}}
+$("cmp").onclick=async()=>{try{if(window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission&&await DeviceOrientationEvent.requestPermission()!=="granted")return;addEventListener("deviceorientationabsolute",orient,true);addEventListener("deviceorientation",orient,true)}catch(e){}};
+const DH=["سُبْحَانَ ٱللَّهِ","ٱلْحَمْدُ لِلَّهِ","ٱللَّهُ أَكْبَرُ","لَا إِلَٰهَ إِلَّا ٱللَّهُ","أَسْتَغْفِرُ ٱللَّهَ","لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِٱللَّهِ","ٱللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ"];
+function drawT(){$("dh").textContent=DH[s.td||0];$("tbtn").textContent=s.tc||0;$("tinfo").textContent=s.tt?`${s.tc||0} / ${s.tt}`:"";$("selD").value=s.td||0;$("selT").value=s.tt||0}
+function initT(){$("selD").innerHTML=DH.map((x,i)=>`<option value="${i}">${x}</option>`).join("");$("selT").innerHTML=[33,99,100,0].map(n=>`<option value="${n}">${n||"∞"}</option>`).join("");drawT()}
+$("tbtn").onclick=()=>{s.tc=(s.tc||0)+1;save();drawT();if(s.tt&&s.tc%s.tt===0){try{navigator.vibrate&&navigator.vibrate(250)}catch(e){}beep()}};
+$("trst").onclick=()=>{s.tc=0;save();drawT()};
+$("selD").onchange=e=>{s.td=+e.target.value;s.tc=0;save();drawT()};
+$("selT").onchange=e=>{s.tt=+e.target.value;save();drawT()};
+$("search").oninput=drawSur;
+$("selLang").onchange=e=>{s.lang=e.target.value;save();build();tick()};
+$("selCity").onchange=e=>setCity(e.target.value);
+$("selMethod").onchange=e=>{s.method=e.target.value;s.mset=1;save();tick()};
+$("selAsr").onchange=e=>{s.asr=e.target.value;save();tick()};
+$("selHc").value=s.hc||0;$("selHc").onchange=e=>{s.hc=+e.target.value;save();tick()};
+$("selLead").onchange=e=>{s.lead=+e.target.value;save();tick()};
+$("geo").onclick=async()=>{try{const q=await getPos();s.pos={lat:q.lat,lng:q.lng,tz:Intl.DateTimeFormat().resolvedOptions().timeZone};s.mosque=null;s.auto=true;save();renderMq();tick();autoMosque(true)}catch(e){setSt(errMsg(e),1);alert(errMsg(e))}};
+initTV();build();tick();setInterval(tick,1000);if(!TV)autoMosque();if(NATIVE&&LN)LN.checkPermissions().then(p=>{if(p.display==="granted")sched(true)}).catch(()=>{});setTimeout(askNtf,1200);
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script></body></html>
